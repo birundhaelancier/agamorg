@@ -5,7 +5,7 @@ import MessengerCustomerChat from 'react-messenger-customer-chat';
 
 import App from './App';
 
-import { store } from './Redux/Store/store';
+import { store } from './app/store';
 import { Provider } from 'react-redux';
 
 // import Custom Css
