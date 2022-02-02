@@ -1,14 +1,15 @@
-import React from 'react'
+import React,{useState} from 'react'
 import { Link } from 'react-router-dom'
 import avater from '../../../assets/img/common/avater.png'
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom"
 import Swal from 'sweetalert2';
-
+import NewsletterModal from '../NewModel'
 const TopHeader = () => {
     let dispatch = useDispatch();
     const history = useHistory()
-
+    const [login,setLogin] =useState(false)
+    const [register,setregister]=useState(false)
     let status = useSelector((state) => state.user.status);
     let user = useSelector((state) => state.user.user);
 
@@ -37,8 +38,8 @@ const TopHeader = () => {
                                     !status ?
                                         <ul className="right_list_fix">
                                             <li><Link to="/enquiryarea"><i className="fa fa-building-o"></i> Enquiry</Link></li>
-                                            <li><Link to="/login"><i className="fa fa-user"></i> Login</Link></li>
-                                            <li><Link to="/register"><i className="fa fa-lock"></i> Register</Link></li>
+                                            <li onClick={()=>setLogin(true)}><a><i className="fa fa-user"></i> Login</a></li>
+                                            <li onClick={()=>{setregister(true);setLogin(false)}}><a><i className="fa fa-lock"></i> Register</a></li>
                                         </ul>
                                         :
                                         <ul className="right_list_fix">
@@ -56,6 +57,7 @@ const TopHeader = () => {
                         </div>
                     </div>
                 </div>
+                <NewsletterModal show={login || register} start={()=>{setLogin(false);setregister(false)}} header={login?"login":"register"}/>
             </section>
         </>
     )

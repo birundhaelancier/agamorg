@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState} from 'react'
 import logo from '../../../assets/img/agamlogo.png'
 // import logo2 from '../../../assets/img/logo3.png'
 import img from '../../../assets/img/product-image/product4.jpg'
@@ -6,6 +6,8 @@ import Modal from 'react-bootstrap/Modal';
 import { Link } from 'react-router-dom'
 
 const NewsletterModal = (props) => {
+    const [register,setregister]=useState(false)
+    let h__register=props?.header
     return (
         <>
             <Modal show={props.show}
@@ -15,7 +17,7 @@ const NewsletterModal = (props) => {
                     <div className='row'>
 
                         <div className='col-5 model-left-side'>
-                            <div className='sletterTitle'>Login</div>
+                            <div className='sletterTitle'>{h__register==="register" || register?"Register":"Login"}</div>
                             <p>Get access to your Orders, Wishlist and Recommendations</p>
                             {/* <img src={logo2} /> */}
                         </div>
@@ -33,15 +35,21 @@ const NewsletterModal = (props) => {
                             <div className='login-input'>
                                 <form onSubmit={(e) => { e.preventDefault(); }}>
                                     <div className="default-form-box">
-                                        <label>Mobile No or email<span className="text-danger">*</span></label>
-                                        <input type="text" className="form-control" required defaultValue="elancier@gmail.com" />
+                                        <label>Mobile No {h__register==="register" || register ? "":"or email"}<span className="text-danger">*</span></label>
+                                        <input type="text" className="form-control" required defaultValue="8956745678" />
                                     </div>
+                                    {h__register==="register" || register?<div className="default-form-box">
+                                        <label>Email<span className="text-danger">*</span></label>
+                                        <input type="email" className="form-control" required defaultValue="elancier@gmail.com" />
+                                    </div>:null}
                                     <div className="default-form-box">
                                         <label>Passwords<span className="text-danger">*</span></label>
                                         <input type="password" className="form-control" required defaultValue="elancier123" minLength="8" />
                                     </div>
+                                    <div  className="forget_pass">Forgot Password?</div>
+
                                     <div className="btnShow">
-                                        <button className="theme-btn-one btn-black-overlay btn_md" type="submit">login</button>
+                                        <button className="theme-btn-one btn-black-overlay btn_md" type="submit">{h__register==="register" || register?"Register":"Login"}</button>
                                     </div>
                                     <div className="remember_area">
                                         <div className="form-check">
@@ -49,7 +57,11 @@ const NewsletterModal = (props) => {
                                             <label className="form-check-label" htmlFor="materialUnchecked">Remember me</label>
                                         </div>
                                     </div>
-                                    <Link to="/register" className="active">Create Your Account?</Link>
+                                    <Link to="">
+                                        <div  className="active c_create_css"  onClick={()=>setregister(true)}><span>Create Your Account?</span>
+                                        {/* <span>{register?"Login":"Register"}</span> */}
+                                        </div>
+                                    </Link>
                                 </form>
                             </div>
                             {/* <div className='createLink'>

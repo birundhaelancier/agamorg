@@ -64,7 +64,6 @@ const Fashion = loadable(() => pMinDelay(import ('./page/'), 250));
 const EnquiryArea = loadable(() => pMinDelay(import ('./component/Enquiry'), 250));
 const EnquiryData = loadable(() => pMinDelay(import ('./page/enquiryarea'), 250));
 
-
 const App = () => {
   return (
     <>
