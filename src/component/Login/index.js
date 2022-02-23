@@ -8,41 +8,41 @@ const LoginArea = () => {
     let dispatch = useDispatch();
     const history = useHistory()
 
-    let status = useSelector((state) => state.user.status);
-    let user = useSelector((state) => state.user.user);
+    // let status = useSelector((state) => state.user.status);
+    // let user = useSelector((state) => state.user.user);
 
     // Login
-    const login = () => {
-        if(status){
-            Swal.fire({
-                icon: 'question',
-                title: 'Mr. '+user.name,
-                html:
-                    'You are already loged in <br />' +
-                    'You can go to <b>' +
-                    'Dashboard</b> ' +
-                    'or our <b>Shop</b> page',
-            }).then((result) => {
-                if(result.isConfirmed) {
-                  history.push('/my-account')
-                } else {
-                  // not clicked
-                }
-              });
-        }else{
-            dispatch({ type: "user/login" })
-            let name = user.name || 'Customer'
-            console.log(typeof(user.name));
-            Swal.fire({
-                icon: 'success',
-                title: 'Login Sucessfull',
-                text: 'Welcome '+ name
-            })
-            history.push("/my-account");
-        }
+    // const login = () => {
+    //     if(status){
+    //         Swal.fire({
+    //             icon: 'question',
+    //             title: 'Mr. '+user.name,
+    //             html:
+    //                 'You are already loged in <br />' +
+    //                 'You can go to <b>' +
+    //                 'Dashboard</b> ' +
+    //                 'or our <b>Shop</b> page',
+    //         }).then((result) => {
+    //             if(result.isConfirmed) {
+    //               history.push('/my-account')
+    //             } else {
+    //               // not clicked
+    //             }
+    //           });
+    //     }else{
+    //         dispatch({ type: "user/login" })
+    //         let name = user.name || 'Customer'
+    //         console.log(typeof(user.name));
+    //         Swal.fire({
+    //             icon: 'success',
+    //             title: 'Login Sucessfull',
+    //             text: 'Welcome '+ name
+    //         })
+    //         history.push("/my-account");
+    //     }
         
 
-    }
+    // }
 
     return (
         <>
@@ -52,7 +52,7 @@ const LoginArea = () => {
                         <div className="col-lg-6 offset-lg-3 col-md-12 col-sm-12 col-12">
                             <div className="account_form">
                                 <h3>Login</h3>
-                                <form onSubmit={(e)=>{e.preventDefault();login()}}>
+                                <form onSubmit={(e)=>{e.preventDefault();}}>
                                     <div className="default-form-box">
                                         <label>Mobile No or email<span className="text-danger">*</span></label>
                                         <input type="text" className="form-control" required defaultValue="elancier@gmail.com"/>

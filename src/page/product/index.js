@@ -1,14 +1,13 @@
 import React from 'react'
 import Header from '../../component/Common/Header'
-import Banner from '../../component/Common/Banner'
+import Banner from '../../component/Fashion/Banner'
 import ProductDetailsOne from '../../component/Common/ProductDetails/ProductDetails'
 import InstgramSlider from '../../component/Common/Instagram'
 import Footer from '../../component/Common/Footer'
-
-const ProductDetails = () => {
+const ProductDetails = (props) => {
     return (
         <>
-            <Header />
+            <Header/>
             <Banner title="Product Details" />
             <ProductDetailsOne />
             <InstgramSlider />

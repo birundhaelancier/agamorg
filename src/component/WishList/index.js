@@ -1,27 +1,68 @@
-import React from "react";
-import { Link } from 'react-router-dom'
+import React, { useEffect,useState } from "react";
+import { Link, useHistory } from 'react-router-dom'
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch,connect, useSelector } from "react-redux";
 import img from '../../assets/img/common/empty-cart.png'
-
-const Wishlist = () => {
+import { Get_Wishlist } from '../../Redux/Action/allActions'
+import { DeleteWishlist } from '../../Redux/Action/CreateActions'
+import { ImageUrl } from '../../Redux/Utils/baseurl'
+import Swal from "sweetalert2";
+const Wishlist = (props) => {
     let dispatch = useDispatch();
-
-    let favorites = useSelector((state) => state.products.favorites);
+    let history=useHistory()
+    const [WishListData,setWishListData]=useState([])
+    const [CartsDetails, setCartsDetails] = useState(JSON.parse(localStorage.getItem("carts")) || []);
+    // let favorites = useSelector((state) => state.products.favorites);
     
     const rmProduct = (id) => {
-        dispatch({ type: "products/removeFav", payload: { id } });
+        dispatch(DeleteWishlist(id));
+    }
+    const PageReload = () => {
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000)
     }
 
     // Add to cart
-    const addToCart = async (id) => {
-        dispatch({ type: "products/addToCart", payload: { id } })
-        dispatch({ type: "products/removeFav", payload: { id } });
-    }
+    const addToCart = async (product) => {
+        // dispatch({ type: "products/addToCart", payload: { id } })
+        // dispatch({ type: "products/removeFav", payload: { id } });
+        // dispatch(DeleteWishlist(id));
+        let items=[...CartsDetails]
+        items.push(product)
+        setCartsDetails(items);
+        Swal.fire('Success', "Successfully added to your Cart", 'success') 
+        PageReload()
+        var Id =CartsDetails&&CartsDetails.find((cart)=>{
+            return cart?.id===product?.id
+        })
+//   let arr = ShoopingCarts?.filter(item => item.id !== id)
+//   window.localStorage.setItem("carts",JSON.stringify(arr))
 
+        if(product?.id===Id?.id || Id!==undefined){
+           history.push("/cart")
+        }else{
+      
+       }
+       dispatch(DeleteWishlist(product.id,"addcart"))
+      
+    }
+    useEffect(()=>{
+     dispatch(Get_Wishlist())
+    },[])
+    useEffect(()=>{
+        var Data=props.WishList.filter((data)=>{
+            return data!==null
+        })
+        setWishListData(Data)
+    },[props.WishList])
+
+    useEffect(()=>{
+        window.localStorage.setItem("carts",JSON.stringify(CartsDetails))
+     },[CartsDetails])
     return (
         <>
-          {favorites.length
+          {WishListData?.length
                                                 ?
             <section id="Wishlist_area" className="ptb-100">
                 <div className="container">
@@ -41,25 +82,25 @@ const Wishlist = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                          {favorites.map((data, index)=>(
+                                          {WishListData.map((data, index)=>(
                                                     <tr key={index}>
                                                         <td className="product_remove">
                                                             <i className="fa fa-trash text-danger" onClick={() => rmProduct(data.id)} style={{'cursor':'pointer'}}></i>
                                                         </td>
                                                         <td className="product_thumb">
-                                                        <Link to={ `/product-details-one/${data.id}`}>
-                                                                <img src={data.img} alt="img" />
+                                                        <Link to={ `/product-details-one/${data.slug}`}>
+                                                                <img src={ImageUrl+data.photo} alt="img" />
                                                         </Link>
                                                         </td>
                                                         <td className="product_name">
-                                                        <Link to={ `/product-details-one/${data.id}`}>
-                                                            {data.title}
+                                                        <Link to={ `/product-details-one/${data.slug}`}>
+                                                            {data.name}
                                                         </Link>
                                                         </td>
-                                                        <td className="product-price">₹{data.price}.00</td>
-                                                        <td className="product_stock"><h6>In Stock</h6></td>
+                                                        <td className="product-price">₹{data.discount_price}.00</td>
+                                                        <td className="product_stock"><h6>{data.stock}</h6></td>
                                                         <td className="product_addcart">
-                                                            <button type="button" className="theme-btn-one btn-black-overlay btn_sm" onClick={() => addToCart(data.id)}>Add to cart</button>
+                                                            <button type="button" className="theme-btn-one btn-black-overlay btn_sm" onClick={() => addToCart(data)}>Add to cart</button>
                                                         </td>
                                                     </tr> 
                                                 ))}                                  
@@ -88,4 +129,9 @@ const Wishlist = () => {
     )
 }
 
-export default Wishlist
+
+const mapStateToProps = (state) =>
+({
+    WishList: state.AllReducer.WishList || []
+});
+export default connect(mapStateToProps)(Wishlist);

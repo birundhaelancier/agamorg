@@ -29,13 +29,13 @@ const Filter = (props) => {
                                 <option value="high">Price: High to Low</option>
                             </select>
                         </div>
-                        <div className="product_shot_view">
+                        {/* <div className="product_shot_view">
                             <ul>
                                 <li><Link to="/shopList"><i className="fa fa-list"></i></Link></li>
                                 <li><Link to="/shopTwo"><i className="fa fa-th-large"></i></Link></li>
                                 <li><Link to="/shop"><i className="fa fa-th"></i></Link></li>
                             </ul>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

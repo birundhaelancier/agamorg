@@ -1,9 +1,4 @@
-export const apiurl = "https://myv3ads.com/plm/"
+export const apiurl = "https://elancier.in/agam/api/"
+export const ImageUrl = "https://elancier.in/agam/assets/images/"
 
-export const findServer = (userType) => {
-    if(userType=='BM' || userType=='SM' || userType=='SP' || userType=='OM'){
-        return 'https://myv3ads.com/plm/';
-    } else if(userType=='GM' || userType=='DM' ||userType=='CM'){
-        return 'https://myv3ads.com/plmNew/';
-    }
-};
+

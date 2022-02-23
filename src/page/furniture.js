@@ -14,13 +14,13 @@ const Furniture = () => {
         <>
             <Header />
             <Banner />
-            <BannerBottom />
+            {/* <BannerBottom />
             <HotProduct />
             <BlackFriday />
             <PopularProduct />
             <OurStory />
-            <Blog />
-            <InstgramSlider container="container" />
+            <Blog /> */}
+            {/* <InstgramSlider container="container" /> */}
             <Footer />
         </>
     )

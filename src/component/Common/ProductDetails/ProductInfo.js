@@ -44,7 +44,7 @@ const ReviewData = [
 
 ]
 
-const ProductInfo = () => {
+const ProductInfo = (props) => {
     return (
         <>
             <div className="row">
@@ -57,28 +57,8 @@ const ProductInfo = () => {
                         </ul>
                         <div className="tab-content">
                             <div id="description" className="tab-pane fade in show active">
-                                <div className="product_description">
-                                    <p>Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Vestibulum ac
-                                        diam sit amet quam vehicula elementum sed sit amet dui.
-                                        Sed porttitor lectus nibh. Vivamus magna justo, lacinia eget consectetur sed,
-                                        convallis at tellus. Sed porttitor lectus nibh.
-                                        Donec sollicitudin molestie malesuada. Vivamus magna justo,
-                                        lacinia eget consectetur sed, convallis at tellus. Curabitur arcu erat, accumsan
-                                        id imperdiet et, porttitor at sem.</p>
-                                    <ul>
-                                        <li>Vivamus magna justo, lacinia eget consectetur sed</li>
-                                        <li>Curabitur aliquet quam id dui posuere blandit</li>
-                                        <li>Mauris blandit aliquet elit, eget tincidunt nibh pulvinar </li>
-                                    </ul>
-                                    <p>Donec sollicitudin molestie malesuada. Cras ultricies ligula sed magna dictum
-                                        porta.
-                                        Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a.
-                                        Nulla porttitor accumsan tincidunt. Cras ultricies ligula sed magna dictum
-                                        porta. Curabitur arcu erat, accumsan id imperdiet et,
-                                        Pellentesque in ipsum id orci porta dapibus. Lorem ipsum dolor sit amet,
-                                        consectetur adipiscing elit.
-                                        porttitor at sem. Quisque velit nisi, pretium ut lacinia in, elementum id enim.
-                                    </p>
+                                <div className="product_description" dangerouslySetInnerHTML={{__html:props?.Details?.details}}>
+                                    
                                 </div>
                             </div>
                             <div id="additional" className="tab-pane fade">

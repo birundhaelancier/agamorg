@@ -1,25 +1,123 @@
 import {
-    GENEALOGY_TREE,
-  
+    GET_SLIDER_LIST,GET_HOMEPRODUCT_LIST,GET_CATEGORY_LISTITEM,GET_PACKAGE ,GET_CITY_LIST,GET_PROFILE_DATA,
+    GET_WISH_LIST,GET_SINGLEPRODUCT_LIST,GET_SHIPPING_LIST,GET_COUPONCODE,USER_ORDERS,SEARCH_CATEGORY,
+    GET_ADDRESS_LIST 
 } from '../Utils/constant';
 import { apiurl, findServer } from '../Utils/baseurl';
 import axios from 'axios';
-import { notification } from 'antd';
+// import { notification } from 'antd';
 
-export const GetGenealogyTree = (name, id) => async dispatch => {
-    try {
-        axios({
-                method: 'POST',
-                url: apiurl + 'genealogyTree.php',
-                data: JSON.stringify({
-                    "username": id == 1 ? name : JSON.parse(localStorage.getItem("UserName"))
-                })
-            })
-            .then((response) => {
-                dispatch({
-                    type: GENEALOGY_TREE,
-                    payload: response.data.Response
-                })
-            })
-    } catch (err) {}
+
+
+export const Get_Slider_List=()=>async (dispatch)=>{
+        const response=await axios({
+             method:"GET",
+             url:apiurl+"slider",
+        });
+        return dispatch({type:GET_SLIDER_LIST,payload:response.data})
+}
+
+
+export const Get_HomeProduct_List=(type)=>async (dispatch)=>{
+    const response=await axios({
+         method:"POST",
+         url:apiurl+"homeProduct",
+         data:{"type":type}
+    });
+    return dispatch({type:GET_HOMEPRODUCT_LIST,payload:response.data})
+    // console.log(response,"response")
+}
+
+
+export const CategoryList_api=(slug)=>async (dispatch)=>{
+    const response=await axios({
+         method:"GET",
+         url:apiurl+"category/"+slug,
+    });
+    return dispatch({type:GET_CATEGORY_LISTITEM,payload:response.data})
+}
+
+export const Package_List=()=>async (dispatch)=>{
+    const response=await axios({
+         method:"GET",
+         url:apiurl+"package",
+    });
+    return dispatch({type:GET_PACKAGE,payload:response.data})
+}
+
+export const City_List=()=>async (dispatch)=>{
+    const response=await axios({
+         method:"GET",
+         url:apiurl+"city",
+    });
+    return dispatch({type:GET_CITY_LIST,payload:response.data})
+}
+
+export const Profile_Details=()=>async (dispatch)=>{
+    const response=await axios({
+         method:"POST",
+         url:apiurl+"profile",
+         data:{"id":JSON.parse(localStorage.getItem("UserId"))}
+    });
+    return dispatch({type:GET_PROFILE_DATA,payload:response.data})
+}
+
+export const Get_Wishlist=()=>async (dispatch)=>{
+    const response=await axios({
+         method:"POST",
+         url:apiurl+"wishlist",
+         data:{"user_id":JSON.parse(localStorage.getItem("UserId"))}
+    });
+    return dispatch({type:GET_WISH_LIST,payload:response.data})
+}
+
+export const Get_Single_Product_List=(id)=>async (dispatch)=>{
+    const response=await axios({
+         method:"GET",
+         url:apiurl+"product/"+id,
+    });
+    return dispatch({type:GET_SINGLEPRODUCT_LIST,payload:response.data})
+}
+
+
+export const Get_Shipping=(id)=>async (dispatch)=>{
+    const response=await axios({
+         method:"GET",
+         url:apiurl+"shipping",
+    });
+    return dispatch({type:GET_SHIPPING_LIST,payload:response.data})
+}
+
+export const CouponCode=()=>async (dispatch)=>{
+    const response=await axios({
+         method:"GET",
+         url:apiurl+"promocode",
+    });
+    return dispatch({type:GET_COUPONCODE,payload:response.data})
+}
+
+export const UserOrders=()=>async (dispatch)=>{
+    const response=await axios({
+         method:"POST",
+         url:apiurl+"userOrders",
+         data:{"user_id":JSON.parse(localStorage.getItem("UserId"))}
+    });
+    return dispatch({type:USER_ORDERS,payload:response.data})
+}
+
+export const SearchCategory=(data)=>async (dispatch)=>{
+    const response=await axios({
+         method:"POST",
+         url:apiurl+"search",
+         data:{"search":data || ""}
+    });
+    return dispatch({type:SEARCH_CATEGORY,payload:response.data})
+}
+
+export const Get_Address_List=()=>async (dispatch)=>{
+    const response=await axios({
+         method:"GET",
+         url:apiurl+"addressList/"+JSON.parse(localStorage.getItem("UserId")),
+    });
+    return dispatch({type:GET_ADDRESS_LIST,payload:response.data})
 }

@@ -1,11 +1,32 @@
-import React from 'react'
+import React,{useEffect,useState} from 'react'
 import BarChart from '../VendorDashboard/BarChart'
 import LineChart from '../VendorDashboard/LineChart'
 import { useSelector } from "react-redux"
 import { Link } from 'react-router-dom'
+import { UserOrders } from '../../Redux/Action/allActions'
+import moment from 'moment'
+import { ImageUrl } from '../../Redux/Utils/baseurl'
+import { useDispatch,connect } from 'react-redux'
+const DashBoard = (props) => {
+    let dispatch=useDispatch()
+    const [OrderDetails,setOrderDetails]=useState([])
+    const [cartDetail,setcartDetail]=useState([])
+    useEffect(()=>{
+      dispatch(UserOrders())
+    },[])
+    useEffect(()=>{
+        let Data=[]
+        setOrderDetails(props.Orders)
+        props.Orders.filter((data)=>{
+            if(data.order_status==="Pending"){
+            Data.push(data)
+            }
+        })
+        setcartDetail(Data)
 
-const DashBoard = () => {
-    let products = useSelector((state) => state.products.products);
+    },[props.Orders])
+    console.log(cartDetail,"dddddddddddddd")
+
     return (
 
         <>
@@ -29,18 +50,7 @@ const DashBoard = () => {
                     </div>
                 </div>
             </div>
-            <div className="row">
-                <div className="col-lg-6">
-                    <div className="mychart_area">
-                        <LineChart />
-                    </div>
-                </div>
-                <div className="col-lg-6">
-                    <div className="mychart_area">
-                        <BarChart />
-                    </div>
-                </div>
-            </div>
+           
             <div className="row">
                 <div className="col-lg-6 col-md-6 col-sm-12 col-12">
                     <div className="vendor_order_boxed pt-4">
@@ -48,23 +58,35 @@ const DashBoard = () => {
                         <table className="table pending_table">
                             <thead className="thead-light">
                                 <tr>
-                                    <th scope="col">Image</th>
-                                    <th scope="col">Product Name</th>
+                                    <th scope="col">OrderId</th>
+                                    <th scope="col">Date</th>
                                     <th scope="col">Price</th>
-                                    <th scope="col">Sales</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {products.slice(1, 5).map((data, index) => (
+                            {/* <tbody> */}
+                                {/* {products.slice(1, 5).map((data, index) => (
                                     <tr key={index}>
                                         <td><img width="52px" src={data.img} alt="img" /></td>
                                         <td>{data.title}</td>
                                         <td>₹{data.price}</td>
                                         <td>{parseInt(data.price) * 3}</td>
                                     </tr>
-                                ))}
+                                ))} */}
 
-                            </tbody>
+                           {cartDetail?.map((data)=>
+                                <tbody>
+                                <tr>
+
+                                    <td><Link to={`/invoice-one/${data.id}`} className="text-primary">#{data.txnid}</Link></td>
+                                    <td>{moment(data.created_at).format("DD-MM-YYYY")}</td>
+                                    <td><span>₹{data.orderTotal}</span></td>
+
+                                </tr>
+                                
+                                </tbody>
+                                )}
+
+                            {/* </tbody> */}
                         </table>
                     </div>
                 </div>
@@ -79,43 +101,17 @@ const DashBoard = () => {
                                     <th scope="col">Status</th>
                                 </tr>
                             </thead>
+                            {OrderDetails?.map((data)=>{
+                            return(
                             <tbody>
                                 <tr>
-                                    <td><Link href="/invoice-one" className="text-primary">#78153</Link></td>
-                                    <td>Belted Trench Coat</td>
-                                    <td><span className="badge badge-info">Shipped</span></td>
-                                </tr>
-                                <tr>
-                                    <td><Link to="/invoice-one" className="text-primary">#78154</Link></td>
-                                    <td>Neck Velvet Dress</td>
-                                    <td><span className="badge badge-warning">Pending</span></td>
-                                </tr>
-                                <tr>
-                                    <td><Link to="/invoice-one" className="text-primary">#78155</Link></td>
-                                    <td>T-Shirt For Woman</td>
-                                    <td><span className="badge badge-success">Confirmed</span></td>
-                                </tr>
-                                <tr>
-                                    <td><Link to="/invoice-one" className="text-primary">#78156</Link></td>
-                                    <td>Fit-Flare Dress</td>
-                                    <td><span className="badge badge-danger">Canceled</span></td>
-                                </tr>
-                                <tr>
-                                    <td><Link to="/invoice-one" className="text-primary">#78157</Link></td>
-                                    <td>Long-Shirt For Men</td>
-                                    <td><span className="badge badge-info">Shipped</span></td>
-                                </tr>
-                                <tr>
-                                    <td><Link to="/invoice-one" className="text-primary">#78158</Link></td>
-                                    <td>Sharee for women</td>
-                                    <td><span className="badge badge-info">Shipped</span></td>
-                                </tr>
-                                <tr>
-                                    <td><Link to="/invoice-one" className="text-primary">#78159</Link></td>
-                                    <td>Handbag for Girls</td>
-                                    <td><span className="badge badge-info">Shipped</span></td>
-                                </tr>
+                                    <td><Link to={`/invoice-one/${data.id}`} className="text-primary">#{data.txnid}</Link></td>
+                                    <td>{moment(data.created_at).format("DD-MM-YYYY")}</td>
+                                    <td><span className={`badge ${data.order_status==="Pending"?"badge-warning":data.order_status==="Completed"?"badge-success":"badge-info"}`}>{data.order_status}</span></td>
+                                </tr>                                
                             </tbody>
+                            )})}
+                            
                         </table>
                     </div>
                 </div>
@@ -124,4 +120,8 @@ const DashBoard = () => {
     )
 }
 
-export default DashBoard
+const mapStateToProps = (state) =>
+({
+    Orders: state.AllReducer.Orders || []
+});
+export default connect(mapStateToProps)(DashBoard);

@@ -17,7 +17,7 @@ const FooterData = [
             // { linkTitle: "About us", link: "/about" },
             // { linkTitle: "Privacy Policy", link: "/privacy-policy" },
             { linkTitle: "Frequently Questions", link: "/faqs" },
-            { linkTitle: "Order Tracking", link: "/order-tracking" },
+            // { linkTitle: "Order Tracking", link: "/order-tracking" },
             // { linkTitle: "Compare", link: "/compare" }
         ]
     },
@@ -37,57 +37,57 @@ const FooterData = [
 const Footer = () => {
     let dispatch = useDispatch();
 
-    let promoCenter = useSelector((state) => state.settings.promoCenter);
-    let promoStatus = useSelector((state) => state.settings.promoStatus);
-    let stopPromo = useSelector((state) => state.settings.stopPromo);
-    let cookie = useSelector((state) => state.settings.cookie);
-    let stopCookie = useSelector((state) => state.settings.stopCookie);
+    // let promoCenter = useSelector((state) => state.settings.promoCenter);
+    // let promoStatus = useSelector((state) => state.settings.promoStatus);
+    // let stopPromo = useSelector((state) => state.settings.stopPromo);
+    // let cookie = useSelector((state) => state.settings.cookie);
+    // let stopCookie = useSelector((state) => state.settings.stopCookie);
 
-    useEffect(() => {
-        if (promoStatus) {
-            return
-        } else {
-            dispatch({ type: "settings/promoStatus" })
-            setTimeout(function () {
-                dispatch({ type: "settings/promoCenter" })
-            }, 2000)
-        }
+    // useEffect(() => {
+    //     if (promoStatus) {
+    //         return
+    //     } else {
+    //         dispatch({ type: "settings/promoStatus" })
+    //         setTimeout(function () {
+    //             dispatch({ type: "settings/promoCenter" })
+    //         }, 2000)
+    //     }
 
-        if (stopCookie) {
-            return
-        } else {
-            setTimeout(function () {
-                dispatch({ type: "settings/cookie" })
-            }, 6000)
-        }
-    }, [dispatch, promoStatus, stopCookie]);
+    //     if (stopCookie) {
+    //         return
+    //     } else {
+    //         setTimeout(function () {
+    //             dispatch({ type: "settings/cookie" })
+    //         }, 6000)
+    //     }
+    // }, [dispatch, promoStatus, stopCookie]);
 
 
-    const startPromoModal = () => {
-        if (stopPromo) {
-            dispatch({ type: "settings/promoCenter" })
-            return;
-        } else {
-            dispatch({ type: "settings/promoCenter" })
-            setTimeout(function () {
-                dispatch({ type: "settings/promoCenter" })
-            }, 700000)
-        }
+    // const startPromoModal = () => {
+    //     if (stopPromo) {
+    //         dispatch({ type: "settings/promoCenter" })
+    //         return;
+    //     } else {
+    //         dispatch({ type: "settings/promoCenter" })
+    //         setTimeout(function () {
+    //             dispatch({ type: "settings/promoCenter" })
+    //         }, 700000)
+    //     }
 
-    }
+    // }
 
-    const stopPromoModal = () => {
-        dispatch({ type: "settings/stopPromo" })
-    }
+    // const stopPromoModal = () => {
+    //     dispatch({ type: "settings/stopPromo" })
+    // }
 
-    const cancelCookie = () => {
-        dispatch({ type: "settings/cookie" })
-    }
+    // const cancelCookie = () => {
+    //     dispatch({ type: "settings/cookie" })
+    // }
 
-    const acceptCookie = () => {
-        // Write your function there
-        dispatch({ type: "settings/cookie" })
-    }
+    // const acceptCookie = () => {
+    //     // Write your function there
+    //     dispatch({ type: "settings/cookie" })
+    // }
 
     return (
         <>
@@ -195,7 +195,7 @@ const Footer = () => {
             {/* {
                 cookie ? <Cookie accept={acceptCookie} cancel={cancelCookie} /> : null
             } */}
-            <NewsletterModal show={promoCenter} stop={stopPromoModal} start={startPromoModal} />
+            {/* <NewsletterModal show={promoCenter} stop={stopPromoModal} start={startPromoModal} /> */}
         </>
     )
 }

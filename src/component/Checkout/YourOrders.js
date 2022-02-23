@@ -1,6 +1,27 @@
-import React from 'react'
-
-const YourOrders = () => {
+import React,{useState,useEffect} from 'react'
+import { connect, useDispatch } from 'react-redux'
+import { Get_Shipping } from '../../Redux/Action/allActions'
+const YourOrders = (props) => {
+    let dispatch=useDispatch()
+    const ShoopingCarts= JSON.parse(localStorage.getItem("carts"))
+    const [FilterData,setFilterData]=useState([])
+    const cartTotal = () => {
+        return ShoopingCarts?.reduce(function (total, item) {
+          return total + item.discount_price*item.quantity;
+        }, 0);
+      };
+      useEffect(()=>{
+        dispatch(Get_Shipping())
+      },[])
+      useEffect(()=>{
+        let Total=cartTotal()
+        if(Total>1000){
+            setFilterData(props.ShippingDetails[0])
+        }else{
+            setFilterData(props.ShippingDetails[1]) 
+        }
+      },[props.ShippingDetails])  
+      console.log(FilterData)
     return (
         <>
             <div className="order_review  box-shadow bg-white">
@@ -15,35 +36,32 @@ const YourOrders = () => {
                                 <th>Total</th>
                             </tr>
                         </thead>
+                   
                         <tbody>
+                        {ShoopingCarts.map((data)=>{
+                            return(
                             <tr>
-                                <td>Cauliflower <span className="product-qty">x 2</span>
+                                <td>{data.name} <span className="product-qty">x {data.quantity || 1}</span>
+                                {/* <td>₹{data.pack}</td> */}
+
                                 </td>
-                                <td>₹90.00</td>
+                                <td>₹{data.discount_price}.00</td>
                             </tr>
-                            <tr>
-                                <td>Cucumber<span className="product-qty">x 1</span>
-                                </td>
-                                <td>₹55.00</td>
-                            </tr>
-                            <tr>
-                                <td>Carrot <span className="product-qty">x 3</span>
-                                </td>
-                                <td>₹204.00</td>
-                            </tr>
+                        )})}
                         </tbody>
+                      
                         <tfoot>
                             <tr>
                                 <th>SubTotal</th>
-                                <td className="product-subtotal">₹349.00</td>
+                                <td className="product-subtotal">₹{cartTotal()}.00</td>
                             </tr>
                             <tr>
-                                <th>Shipping</th>
-                                <td>Free Shipping</td>
+                                <th>Delivery Charges</th>
+                                <td>{FilterData?.title==="Delivery"?"₹"+FilterData?.price+".00":FilterData?.title}</td>
                             </tr>
                             <tr>
                                 <th>Total</th>
-                                <td className="product-subtotal">₹349.00</td>
+                                <td className="product-subtotal">₹{Number(cartTotal())+Number(FilterData?.price || 0)}.00</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -53,4 +71,8 @@ const YourOrders = () => {
     )
 }
 
-export default YourOrders
+const mapStateToProps = (state) =>
+({
+    ShippingDetails: state.AllReducer.Shipping || []
+});
+export default connect(mapStateToProps)(YourOrders);

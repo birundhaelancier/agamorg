@@ -2,7 +2,9 @@ import React, {useState} from 'react'
 import { Link } from 'react-router-dom'
 import MyVerticallyCenteredModal from '../../Common/Modal';
 import { RatingStar } from "rating-star";
-import { useDispatch } from "react-redux";
+import { useDispatch,connect } from "react-redux";
+import { AddWishlist } from '../../../Redux/Action/CreateActions'
+import Swal from "sweetalert2";
 const ProductCard = (props) => {
     let dispatch = useDispatch();
     // Add to cart
@@ -12,7 +14,16 @@ const ProductCard = (props) => {
     
     // Add to Favorite
     const addToFav = async (id) => {
-        dispatch({ type: "products/addToFav", payload: { id } })
+        var Data=props.WishList.filter((item)=>{
+            return item.id===id
+        })
+        if(JSON.parse(localStorage.getItem("UserId"))){
+           if(Data[0]?.id===id){Swal.fire('Failed', "Already Added in Wishlist", 'warning')}
+           else{ dispatch(AddWishlist(id)) }
+         }
+        else{
+        Swal.fire('Failed', "Please Login then Added in Your Wishlist", 'warning')
+        }
     }
 
     // Add to Compare
@@ -20,6 +31,7 @@ const ProductCard = (props) => {
         dispatch({ type: "products/addToComp", payload: { id } })
     }
     const [modalShow, setModalShow] = useState(false);
+    console.log("cccccccccccc",props.WishList)
     return (
         <>
              <div className="product_box text-center">
@@ -60,4 +72,8 @@ const ProductCard = (props) => {
     )
 }
 
-export default ProductCard
+const mapStateToProps = (state) =>
+({
+    WishList: state.AllReducer.WishList || [],
+});
+export default connect(mapStateToProps)(ProductCard);

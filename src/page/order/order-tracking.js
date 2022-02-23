@@ -7,7 +7,7 @@ const OrderTracking = () => {
     return (
         <>
             <Header />
-            <Banner title="Order Tracking" />
+            {/* <Banner title="Order Tracking" /> */}
             <OrderTrackings />
             <Footer />
         </>

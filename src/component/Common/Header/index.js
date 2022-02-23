@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,Fragment } from "react";
 import { Link } from "react-router-dom";
 import logo from "../../../assets/img/agamlogo.png";
 import logoWhite from "../../../assets/img/agamlogo.png";
@@ -9,36 +9,65 @@ import { useHistory } from "react-router-dom";
 import svg from "../../../assets/img/svg/cancel.svg";
 import svgsearch from "../../../assets/img/svg/search.svg";
 import LocationModal from "./LocationModal";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector,connect } from "react-redux";
 import Swal from "sweetalert2";
 import List from "@mui/material/List";
 import { ListItemButton,ListItemText,Collapse } from "@mui/material";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import { ProductData } from '../../../app/data/productsData'
+import { WISHLIST_FAVORITES } from '../../../Redux/Utils/constant'
+import { Get_Wishlist,SearchCategory } from '../../../Redux/Action/allActions'
+import { DeleteWishlist } from '../../../Redux/Action/CreateActions'
+import { apiurl, ImageUrl } from '../../../Redux/Utils/baseurl'
+import TextField from '@mui/material/TextField';
+import { Autocomplete,InputAdornment,Box} from '@mui/material';
+import  { createFilterOptions } from '@mui/material/Autocomplete';
+import NewsletterModal from '../NewModel'
+import axios from 'axios'
 // const MenuData = []
-const Header = () => {
+const Header = (props) => {
   const [click, setClick] = useState(false);
+  const [searchValue,setsearchValue]=useState(null)
+  const [login,setlogin]=useState(false)
+  const [SearchList,setSearchList]=useState([])
+  const [Category,setCategory]=useState([])
+  const [FilterData,setFilterData]=useState([])
+  const [WishListData,setWishListData]=useState([])
   const [show, setShow] = useState();
   const [location, setLocation] = useState(false);
+  const [ShoopingCarts,setShoopingCarts]=useState(JSON.parse(window.localStorage.getItem("carts")) || [])
   const history = useHistory();
   const [open2, setOpen2] = useState(false);
   const [open, setOpen] = useState(false);
 
-  let carts = useSelector((state) => state.products.carts);
-  let favorites = useSelector((state) => state.products.favorites);
+
   let dispatch = useDispatch();
 
   const rmCartProduct = (id) => {
-    dispatch({ type: "products/removeCart", payload: { id } });
+    Swal.fire({
+      title: 'Success!',
+      text: "Product Deleted Successfully",
+      icon: 'success',
+      showConfirmButton: false,
+      timer: 1000
+    })
+    let arr = ShoopingCarts?.filter(item => item.id !== id)
+    window.localStorage.setItem("carts",JSON.stringify(arr))
+    PageReload()
   };
-
+  const PageReload = () => {
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000)
+    }
   const rmFavProduct = (id) => {
-    dispatch({ type: "products/removeFav", payload: { id } });
+    dispatch(DeleteWishlist(id));
   };
 
   const cartTotal = () => {
-    return carts.reduce(function (total, item) {
-      return total + (item.quantity || 1) * item.price;
+    return ShoopingCarts?.reduce(function (total, item) {
+      return total + item.discount_price*item.quantity;
     }, 0);
   };
 
@@ -87,10 +116,11 @@ const Header = () => {
     if (click) {
       document.querySelector("#mobile-menu-offcanvas").style =
         "transform: translateX(100%);";
-    } else {
-      document.querySelector("#mobile-menu-offcanvas").style =
-        "transform: translateX(0%);";
-    }
+    } 
+    // else {
+    //   document.querySelector("#mobile-menu-offcanvas").style =
+    //     "transform: translateX(0%);";
+    // }
     setClick(!click);
   };
 
@@ -113,6 +143,59 @@ const Header = () => {
       ? header.classList.add("is-sticky")
       : header.classList.remove("is-sticky");
   };
+  useEffect(()=>{
+    dispatch(Get_Wishlist())
+    dispatch({type:WISHLIST_FAVORITES,payload:{carts:ProductData.slice(5,8),favorites:ProductData.slice(9,12)}})
+    axios({
+      method: 'Get',
+      url:"https://elancier.in/agam/api/category",
+  })
+  .then((response) => {
+      setCategory(response.data)
+  })
+  dispatch(SearchCategory()).then((res)=>{
+    let Data=[]
+    res.payload.product.concat(res.payload.category).map((data)=>{
+       Data.push(data)
+    })
+  setFilterData(res.payload)
+  setSearchList(Data)
+
+  })
+
+  },[])
+
+  useEffect(()=>{
+    var Data=props.WishList.filter((data)=>{
+      return data!==null
+    })
+    setWishListData(Data)
+  },[props.WishList])
+  const OnChangeCategory=(data)=>{
+    history.push({
+      pathname:`/shop/${data}`,
+      state:props.Slug?props.Slug:data
+    })
+  }
+useEffect(()=>{
+  setShoopingCarts(JSON.parse(window.localStorage.getItem("carts")))
+},[window.localStorage.getItem("carts")])
+const ChangeSearchList=(event,data)=>{
+  setsearchValue(data)
+  FilterData.category.filter((item)=>{
+    if(data?.name===item?.name){
+      history.push(`/shop/${item.slug}`)
+    }
+  })
+  FilterData.product.filter((item)=>{
+    if(data?.name===item?.name){
+      history.push(`/product-details-one/${item.slug}`)
+    }
+  })
+  
+}
+
+
 
   return (
     <>
@@ -151,20 +234,52 @@ const Header = () => {
                   <div className="SearchView">
                     <div className="search_space">
                       <div class="wrapper">
+
                         <div className="input-group md-form form-sm form-1 pl-0">
-                          <input
+                          {/* <input
                             className="form-control my-0 py-1"
                             type="text"
                             placeholder="Search"
                             aria-label="Search"
-                          />
+                          /> */}
+                      <Autocomplete 
+                        onChange={(event, newValue) =>
+                          ChangeSearchList(event,newValue)
+                          
+                        }
+                          //  onInputChange={(event, value) => {
+                          //     setsearchValue(value);
+                          // }}
+                        renderOption={(props, option) => (
+                            
+                                      <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                                      {option.photo?<img
+                                        loading="lazy"
+                                        width="40"
+                                        src={ImageUrl+option?.photo}
+                                        alt=""
+                                      />
+                                      : <span style={{width:"40px"}}><i className="fa fa-search srch_btn"></i></span>}
+                                      <span>{option?.name}</span>
+                                    </Box>
+                                 
+                        )}
+                      // getOptionLabel={(option) => option.name}
+                      // filterOptions={filterOptions}
+                      value={searchValue}
+                      options={SearchList}
+                      // disableClearable
+                      // getOptionSelected={(option, value) => option.title === value.title}
+                      getOptionLabel={(option) => option.name}
+                     renderInput={(params) => (
+                     <TextField {...params} size="Normal" InputLabelProps={{shrink:false}} InputProps={{...params.InputProps,type: 'search',
+                       endAdornment: <InputAdornment>  <i className="fa fa-search search_icon"></i> </InputAdornment>,
+                     }}
+                    />
+                      )}
+                      />
                           <div className="input-group-prepend">
-                            <span
-                              className="input-group-text search_cus_back"
-                              id="basic-text1"
-                            >
-                              <i className="fa fa-search search_icon"></i>
-                            </span>
+                           
                           </div>
                         </div>
                       </div>
@@ -179,14 +294,14 @@ const Header = () => {
 
                   <ul className="header-action-link action-color--black action-hover-color--golden">
                     <li>
-                      {favorites.length ? (
+                      {WishListData?.length ? (
                         <a
                           href="#offcanvas-wishlish"
                           className="offcanvas-toggle"
                           onClick={handleWish}
                         >
                           <i className="fa fa-heart"></i>
-                          <span className="item-count">{favorites.length}</span>
+                          <span className="item-count">{WishListData?.length}</span>
                         </a>
                       ) : (
                         <a
@@ -194,24 +309,24 @@ const Header = () => {
                           className="offcanvas-toggle"
                         >
                           <i className="fa fa-heart"></i>
-                          <span className="item-count">{favorites.length}</span>
+                          <span className="item-count">{WishListData?.length}</span>
                         </a>
                       )}
                     </li>
                     <li>
-                      {carts.length ? (
+                      {ShoopingCarts?.length ? (
                         <a
                           href="#!"
                           className="offcanvas-toggle"
                           onClick={handleClick}
                         >
                           <i className="fa fa-shopping-bag"></i>
-                          <span className="item-count">{carts.length}</span>
+                          <span className="item-count">{ShoopingCarts?.length || 0}</span>
                         </a>
                       ) : (
                         <a href="#!" className="offcanvas-toggle">
                           <i className="fa fa-shopping-bag"></i>
-                          <span className="item-count">{carts.length}</span>
+                          <span className="item-count">{ShoopingCarts?.length || 0}</span>
                         </a>
                       )}
                     </li>
@@ -282,15 +397,18 @@ const Header = () => {
         <div className="container">
           <div className="row">
             <div className="col-12 d-flex align-items-center justify-content-between">
-              <div className="mobile-header-left">
+              <div className="mobile-header-left  d-flex align-items-center">
                 <ul className="mobile-menu-logo">
                   <li>
                     <a href="index.html">
-                      <div className="logo">
+                      <div className="logo footerlogoTitle">
                         <img src={logo} alt="logo" />
+                        <div className='agamTitle'>Agam</div>
+                                        <div className='organicTitle'>org</div>
                       </div>
                     </a>
                   </li>
+                
                 </ul>
               </div>
 
@@ -306,14 +424,14 @@ const Header = () => {
                     </a>
                   </li>
                   <li>
-                    {favorites.length ? (
+                    {WishListData.length ? (
                       <a
                         href="#offcanvas-wishlish"
                         className="offcanvas-toggle"
                         onClick={handleWish}
                       >
                         <i className="fa fa-heart"></i>
-                        <span className="item-count">{favorites.length}</span>
+                        <span className="item-count">{WishListData.length}</span>
                       </a>
                     ) : (
                       <a
@@ -321,24 +439,24 @@ const Header = () => {
                         className="offcanvas-toggle"
                       >
                         <i className="fa fa-heart"></i>
-                        <span className="item-count">{favorites.length}</span>
+                        <span className="item-count">{WishListData.length}</span>
                       </a>
                     )}
                   </li>
                   <li>
-                    {carts.length ? (
+                    {ShoopingCarts?.length ? (
                       <a
                         href="#!"
                         className="offcanvas-toggle"
                         onClick={handleClick}
                       >
                         <i className="fa fa-shopping-bag"></i>
-                        <span className="item-count">{carts.length}</span>
+                        <span className="item-count">{ShoopingCarts?.length || 0}</span>
                       </a>
                     ) : (
                       <a href="#!" className="offcanvas-toggle">
                         <i className="fa fa-shopping-bag"></i>
-                        <span className="item-count">{carts.length}</span>
+                        <span className="item-count">{ShoopingCarts?.length || 0}</span>
                       </a>
                     )}
                   </li>
@@ -346,7 +464,7 @@ const Header = () => {
                     <a
                       href="#!"
                       className="offcanvas-toggle offside-menu"
-                      onClick={handlemenu}
+                      onClick={handleabout}
                     >
                       <i className="fa fa-bars"></i>
                     </a>
@@ -358,171 +476,7 @@ const Header = () => {
         </div>
       </div>
 
-      <div
-        id="mobile-menu-offcanvas"
-        className="offcanvas offcanvas-rightside offcanvas-mobile-menu-section"
-      >
-        <div className="offcanvas-header text-right">
-          <button className="offcanvas-close" onClick={handlemenu}>
-            <img src={svg} alt="icon" />
-          </button>
-        </div>
-        <div className="offcanvas-mobile-menu-wrapper">
-          <div className="mobile-menu-bottom">
-            <div className="offcanvas-menu">
-              <ul>
-                <li>
-                  <a href="/" onClick={() => handleShow("home")}>
-                    <span>Home</span>
-                  </a>
-                  {/* {
-                                        show === "home" ?
-                                            <ul className="mobile-sub-menu">
-                                                <li><Link to="/">Fashion</Link></li>
-                                                <li><Link to="/furniture">Furniture</Link></li>
-                                                <li><Link to="/electronics">Electronics</Link></li>
-                                            </ul> : null
-                                    } */}
-                </li>
-                <li>
-                  <a href="#!" onClick={() => handleShow("shop")}>
-                    <span>Category</span>
-                  </a>
-                  {show === "shop" ? (
-                    <>
-                      <ul className="mobile-sub-menu">
-                        <li>
-                          {/* <a href="#!">Organics</a> */}
-                          <ul className="mobile-sub-menu">
-                            <li>
-                              <Link to="/shop">Seeds</Link>
-                            </li>
-                            {/* <li><Link to="/shopTwo">Shop Three Grid</Link></li>
-                                                        <li><Link to="/shoplist">Shop List View</Link></li>
-                                                        <li><Link to="/shop-left-bar">Shop Left Sidebar</Link></li>
-                                                        <li><Link to="/shop-right-bar">Shop Right Sidebar</Link></li> */}
-                          </ul>
-                        </li>
-                      </ul>
-
-                      <ul className="mobile-sub-menu">
-                        <li>
-                          <a href="/shop">Offer</a>
-                          {/* <ul className="mobile-sub-menu">
-                                                        <li><Link to="/cart">Cart View One</Link></li>
-                                                        <li><Link to="/cartTwo">Cart View Two </Link></li>
-                                                        <li><Link to="/empty-cart">Empty Cart</Link></li>
-                                                        <li><Link to="/checkout-one">Checkout View One</Link></li>
-                                                        <li><Link to="/checkout-two">Checkout View Two</Link></li>
-                                                        <li><Link to="/wishlist">Wishlist</Link></li>
-                                                        <li><Link to="/compare">Compare</Link></li>
-                                                        <li><Link to="/order-tracking">Order Tracking</Link></li>
-                                                        <li><Link to="/order-complete">Order Complete</Link></li>
-                                                    </ul> */}
-                        </li>
-                      </ul>
-                      <ul className="mobile-sub-menu">
-                        <li>
-                          <a href="/blog-grid-three">Post</a>
-                          {/* <ul className="mobile-sub-menu">
-                                                        <li><Link to="/product-details-one/1">Product Single</Link></li>
-                                                        <li><Link to="/product-details-two/1">Product Single Two</Link></li>
-                                                    </ul> */}
-                        </li>
-                      </ul>
-                    </>
-                  ) : null}
-                </li>
-                <li>
-                  <a href="#!" onClick={() => handleShow("feature")}>
-                    <span>Contact-Us</span>
-                  </a>
-                  {show === "feature" ? (
-                    <ul className="mobile-sub-menu">
-                      <li>
-                        <Link to="/vendor-dashboard">Vendar Dashboard</Link>
-                      </li>
-                      {/* <li><Link to="/order-success">Order Success</Link></li>
-                                                <li><Link to="/email-template-one">Email Template 1</Link></li>
-                                                <li><Link to="/email-template-two">Email Template 2</Link></li>
-                                                <li><Link to="/email-template-three">Email Template 3</Link></li>
-                                                <li><Link to="/lookbooks">LookBook</Link></li>
-                                                <li><Link to="/invoice-one">Invoice 1</Link></li>
-                                                <li><Link to="/invoice-two">Invoice 2</Link></li> */}
-                    </ul>
-                  ) : null}
-                </li>
-                <li>
-                  <a href="/enquiryarea" onClick={() => handleShow("blogs")}>
-                    <span>Enquiry</span>
-                  </a>
-                  {/* {
-                                        show === "blogs" ?
-                                            <ul className="mobile-sub-menu">
-                                                <li><Link to="/blog-grid-three">Blog Grid View One</Link></li>
-                                                <li><Link to="/blog-grid-two">Blog Grid View Two</Link></li>
-                                                <li><Link to="/blog-list-view">Blog List View</Link></li>
-                                                <li><Link to="/blog-single-one">Blog Single View One </Link></li>
-                                                <li><Link to="/blog-single-two">Blog Single View TWo</Link></li>
-                                            </ul>
-                                            : null
-                                    } */}
-                </li>
-                {/* <li>
-                                    <a href="#!" onClick={() => handleShow("pages")}><span>Pages</span></a>
-
-                                    {
-                                        show === "pages" ?
-                                            <ul className="mobile-sub-menu">
-                                                <li><Link to="/about">About Us</Link></li>
-                                                <li><Link to="/vendor-dashboard">Vendor</Link></li>
-                                                <li><Link to="/my-account">My Account</Link></li>
-                                                <li><Link to="/contact-one">Contact Us One</Link></li>
-                                                <li><Link to="/contact-two">Contact Us Two</Link></li>
-                                                <li><Link to="/coming-soon">Coming Soon</Link></li>
-                                                <li><Link to="/faqs">Frequently Questions</Link></li>
-                                                <li><Link to="/privacy-policy">Privacy Policy</Link></li>
-                                                <li><Link to="/error">404 Page</Link></li>
-                                                <li><Link to="/login">Login</Link></li>
-                                            </ul>
-                                            : null
-                                    }
-                                </li> */}
-              </ul>
-            </div>
-          </div>
-          <div className="mobile-contact-info">
-            {/* <div className="logo">
-                            <Link to="/"><img src={logoWhite} alt="img" /></Link>
-                        </div>
-                        <address className="address">
-                            <span>Address: No.10, Kamarajar Street, Madurai</span>
-                            <span>Call Us: 0123456789, 0123456789</span>
-                            <span>Email: info@agamorg.com</span>
-                        </address>
-                        <ul className="social-link">
-                            <li>
-                                <a href="#!"><i className="fa fa-facebook"></i></a>
-                            </li>
-                            <li>
-                                <a href="#!"><i className="fa fa-twitter"></i></a>
-                            </li>
-                            <li>
-                                <a href="#!"><i className="fa fa-instagram"></i></a>
-                            </li>
-                            <li>
-                                <a href="#!"><i className="fa fa-linkedin"></i></a>
-                            </li>
-                        </ul>
-
-                        <ul className="user-link">
-                            <li><Link to="/wishlist">Wishlist</Link></li>
-                            <li><Link to="/cart">Cart</Link></li>
-                            <li><Link to="/checkout-one">Checkout</Link></li>
-                        </ul> */}
-          </div>
-        </div>
-      </div>
+   
       <div
         id="offcanvas-about"
         className="offcanvas offcanvas-rightside offcanvas-mobile-about-section"
@@ -533,53 +487,7 @@ const Header = () => {
               <img src={svg} alt="icon" />
             </button>
           </div>
-          {/* <div className="offcanvas-menu">
-                        <ul>
-                            <li>
-                                <a href="/" onClick={() => handleShow("home")}><span>Home</span></a>
-                            </li>
-                            <li >
-                                <a href="#!" onClick={() => handleShow("shop")}><span><i class="fa fa-chevron-right" aria-hidden="true"></i></span><span>Category</span></a>
-                                {
-                                    show === "shop" ? <>
-                                        <ul className="mobile-sub-menu">
-                                            <li>
-                                                <ul className="mobile-sub-menu">
-                                                    <li><Link to="/shop">Seeds</Link></li>
-                                                 
-                                                </ul>
-                                            </li>
-                                        </ul>
-                                    </> : null
-                                }
-                            </li>
-                            <li>
-                                <a href="/shop">Offer</a>
-                            </li>
-                            <li>
-                                <a href="/blog-grid-three">Post</a>
-                            </li>
-                            <li>
-                                <a href="#!" onClick={() => handleShow("feature")}><span><i class="fa fa-chevron-right" aria-hidden="true"></i></span><span>Contact-Us</span></a>
-                                {
-                                    show === "feature" ?
-
-                                        <ul className="mobile-sub-menu">
-                                            <li><Link to="/vendor-dashboard">Vendar Dashboard</Link></li>
-                                      
-                                        </ul>
-
-                                        : null
-                                }
-                            </li>
-                            <li>
-                                <a href="/enquiryarea" onClick={() => handleShow("blogs")}><span>Enquiry</span></a>
-                           
-
-                            </li>
-                           
-                        </ul>
-                    </div> */}
+    
           <List
             sx={{ width: "100%", maxWidth: 360}}
             component="nav"
@@ -587,16 +495,20 @@ const Header = () => {
           >
             <ListItemButton component={Link} to="/">
               <ListItemText primary="Home" />
+              {/* <i class="fas fa-home"></i> */}
             </ListItemButton>
             <ListItemButton onClick={() => setOpen(!open)}>
               <ListItemText primary="Category" />
               {open ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
-            <Collapse in={open} timeout="auto" unmountOnExit>
+            <Collapse in={open} timeout="auto">
               <List component="div" disablePadding>
-                <ListItemButton sx={{ pl: 4 }} component={Link} to="/shop">
-                  <ListItemText primary="Vegetables & Fruits" />
+                {Category.map((data)=>{
+                  return(
+                <ListItemButton sx={{ pl: 4 }}  onClick={()=>OnChangeCategory(data.slug)}>
+                  <ListItemText primary={data.name} />
                 </ListItemButton>
+                )})}
               </List>
             </Collapse>
             <ListItemButton component={Link} to="/shop">
@@ -636,35 +548,38 @@ const Header = () => {
         <div className="offcanvas-add-cart-wrapper">
           <h4 className="offcanvas-title">Shopping Cart</h4>
           <ul className="offcanvas-cart">
-            {carts.map((data, index) => (
+            {ShoopingCarts&& ShoopingCarts?.map((data, index) => (
               <li className="offcanvas-wishlist-item-single" key={index}>
                 <div className="offcanvas-wishlist-item-block">
                   <Link
-                    to={`/product-details-one/${data.id}`}
+                    to={`/product-details-one/${data.slug}`}
                     className="offcanvas-wishlist-item-image-link"
                   >
                     <img
-                      src={data.img}
+                      src={ImageUrl+data.photo}
                       alt="img"
                       className="offcanvas-wishlist-image"
                     />
                   </Link>
                   <div className="offcanvas-wishlist-item-content">
                     <Link
-                      to={`/product-details-one/${data.id}`}
+                      to={`/product-details-one/${data.slug}`}
                       className="offcanvas-wishlist-item-link"
                     >
-                      {data.title}
+                      {data.name}
                     </Link>
+                  
                     <div className="offcanvas-wishlist-item-details">
                       <span className="offcanvas-wishlist-item-details-quantity">
                         {data.quantity || 1} x
                       </span>
+                      
                       <span className="offcanvas-wishlist-item-details-price">
                         {" "}
-                        ₹{data.price}
+                        {data.pack || 1}
                       </span>
                     </div>
+                    <div style={{color:"green"}}> ₹{data.discount_price*data.quantity}</div>
                   </div>
                 </div>
                 <div className="offcanvas-wishlist-item-delete text-right">
@@ -695,12 +610,20 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Link
-                to="/checkout-one"
+              <a
+                onClick={()=>{
+                  if(JSON.parse(localStorage.getItem("UserId"))){
+                    setlogin(false)
+                    history.push(`/checkout-one/${"no"}`)
+                  }else{
+                    setlogin(true)
+                  }
+                  
+                }}
                 className="theme-btn-one btn-black-overlay btn_md"
               >
                 Checkout
-              </Link>
+              </a>
             </li>
           </ul>
         </div>
@@ -719,32 +642,34 @@ const Header = () => {
           <h4 className="offcanvas-title">Wishlist</h4>
 
           <ul className="offcanvas-wishlist">
-            {favorites.map((data, index) => (
+            {WishListData.map((data, index) => {
+              return(
               <li className="offcanvas-wishlist-item-single" key={index}>
+
                 <div className="offcanvas-wishlist-item-block">
                   <Link
-                    to={`/product-details-one/${data.id}`}
+                    to={`/product-details-one/${data?.slug}`}
                     className="offcanvas-wishlist-item-image-link"
                   >
                     <img
-                      src={data.img}
+                      src={ImageUrl+data?.photo}
                       alt="img"
                       className="offcanvas-wishlist-image"
                     />
                   </Link>
                   <div className="offcanvas-wishlist-item-content">
                     <Link
-                      to={`/product-details-one/${data.id}`}
+                      to={`/product-details-one/${data?.slug}`}
                       className="offcanvas-wishlist-item-link"
                     >
-                      {data.title}
+                      {data?.name}
                     </Link>
                     <div className="offcanvas-wishlist-item-details">
                       <span className="offcanvas-wishlist-item-details-quantity">
                         1 x
                       </span>
                       <span className="offcanvas-wishlist-item-details-price">
-                        {data.price}
+                        {data?.discount_price}
                       </span>
                     </div>
                   </div>
@@ -753,13 +678,13 @@ const Header = () => {
                   <a
                     href="#!"
                     className="offcanvas-wishlist-item-delete"
-                    onClick={() => rmFavProduct(data.id)}
+                    onClick={() => rmFavProduct(data?.id)}
                   >
                     <i className="fa fa-trash"></i>
                   </a>
                 </div>
               </li>
-            ))}
+            )})}
           </ul>
           <ul className="offcanvas-wishlist-action-button">
             <li>
@@ -793,8 +718,14 @@ const Header = () => {
         </form>
       </div>
       <LocationModal show={location} start={() => setLocation(false)} />
+      <NewsletterModal show={login} stop={()=>setlogin(false)} start={()=>setlogin(false)} />
     </>
   );
 };
 
-export default Header;
+const mapStateToProps = (state) =>
+({
+    Products: state.AllReducer.Wish_Fav_List || [],
+    WishList: state.AllReducer.WishList || []
+});
+export default connect(mapStateToProps)(Header);

@@ -1,16 +1,40 @@
-import React from 'react'
-import { useHistory } from 'react-router-dom'
+import React,{useEffect,useState} from 'react'
+import { useHistory, useParams } from 'react-router-dom'
 // import img
 import img1 from '../../assets/img/invoice/invoice.svg'
 import logo from '../../assets/img/agamlogo.png'
 import sign from '../../assets/img/invoice/sign.png'
-
-const InvoiceOnes = () => {
+import { UserOrders } from '../../Redux/Action/allActions'
+import { connect,useDispatch } from 'react-redux'
+import moment from 'moment'
+const InvoiceOnes = (props) => {
   const history = useHistory();
+  let { id } =useParams()
+  let dispatch=useDispatch()
   const routeChange = () => {
     history.goBack()
   };
+  const [OrderDetails,setOrderDetails]=useState([])
+  useEffect(()=>{
+    dispatch(UserOrders())
+  },[])
+  useEffect(()=>{
+    props.Orders.filter((data)=>{
+     if(data.id===Number(id)){
+      setOrderDetails(data)
+     }
+    })
+  },[props.Orders,id])
+  const  Billing =OrderDetails?.billing_info
+  const OrderDetail=Object.values(OrderDetails?.cart || "") || OrderDetails.cart
+  console.log(OrderDetail,"hjfg")
+  const cartTotal = () => {
+    return OrderDetail.reduce(function (total, item) {
+        return total + ((item.qty || 1) * item.main_price)
+    }, 0)
+}
   return (
+   
     <>
       <section className="theme-invoice-1 pb-100">
         <div className="container">
@@ -51,17 +75,17 @@ const InvoiceOnes = () => {
                       <h2>invoice</h2>
                       <div className="mt-md-4 mt-3">
                         <h4 className="mb-2">
-                          Customer Address : <br/> No. 10, Kamarajar Street
+                          Customer Address : <br/> {Billing?.bill_address1}
                         </h4>
-                        <h4 className="mb-0">Madurai, 07649</h4>
+                        <h4 className="mb-0">{Billing?.bill_city}, {Billing?.bill_zip}</h4>
                       </div>
                     </div>
                   </div>
                   <div className="detail-bottom">
                     <ul>
-                      <li><span>date :</span><h4> 20 march, 2020</h4></li>
-                      <li><span>invoice no :</span><h4> 908452</h4></li>
-                      <li><span>email :</span><h4> user@gmail.com</h4></li>
+                      <li><span>date :</span><h4> {moment(OrderDetails?.created_at).format("DD MMMM , YYYY")}</h4></li>
+                      <li><span>Transaction no :</span><h4> {OrderDetails?.transaction_number}</h4></li>
+                      <li><span>email :</span><h4>{Billing?.bill_email}</h4></li>
                     </ul>
                   </div>
                 </div>
@@ -76,48 +100,25 @@ const InvoiceOnes = () => {
                         <th scope="col">total</th>
                       </tr>
                     </thead>
+             {OrderDetail.map((data,index)=>{
+                     return(
                     <tbody>
                       <tr>
-                        <th scope="row">1</th>
-                        <td>Logo Designing</td>
-                        <td>₹50</td>
-                        <td>2</td>
-                        <td>₹100</td>
+                        <th scope="row">{index+1}</th>
+                        <td>{data.name}</td>
+                        <td>₹{data.main_price}</td>
+                        <td>{data.qty}</td>
+                        <td>₹{data.main_price*data.qty}</td>
                       </tr>
-                      <tr>
-                        <th scope="row">2</th>
-                        <td>website & banner design</td>
-                        <td>₹30</td>
-                        <td>3</td>
-                        <td>₹90</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">3</th>
-                        <td>frontend development</td>
-                        <td>₹95</td>
-                        <td>1</td>
-                        <td>₹95</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">4</th>
-                        <td>backend development</td>
-                        <td>₹95</td>
-                        <td>1</td>
-                        <td>₹95</td>
-                      </tr>
-                      <tr>
-                        <th scope="row">5</th>
-                        <td>SEO, Deigital marketing</td>
-                        <td>₹95</td>
-                        <td>1</td>
-                        <td>₹95</td>
-                      </tr>
+                   
                     </tbody>
+                    )})}      
+
                     <tfoot>
                       <tr>
                         <td colSpan="2"></td>
                         <td className="font-bold text-dark" colSpan="2">GRAND TOTAL</td>
-                        <td className="font-bold text-theme">$325.00</td>
+                        <td className="font-bold text-theme">${cartTotal()}.00</td>
                       </tr>
                     </tfoot>
                   </table>
@@ -142,4 +143,8 @@ const InvoiceOnes = () => {
   )
 }
 
-export default InvoiceOnes
+const mapStateToProps = (state) =>
+({
+    Orders: state.AllReducer.Orders || []
+});
+export default connect(mapStateToProps)(InvoiceOnes);

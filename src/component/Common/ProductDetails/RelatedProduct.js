@@ -10,11 +10,11 @@ const RelatedProduct = () => {
                 <div className="container">
                     <Heading heading="You Might Also Like" para="Mauris luctus nisi sapien tristique dignissim ornare" />
                     <div className="row">
-                        {products.slice(0, 4).map((data, index) => (
+                        {/* {products.slice(0, 4).map((data, index) => (
                             <div className="col-lg-3 col-md-4 col-sm-6 col-12" key={index} >
                                 <ProductCard data={data} />
                             </div>
-                        ))}
+                        ))} */}
                     </div>
                 </div>
             </section>

@@ -1,5 +1,5 @@
-import React from 'react'
-import { useHistory } from 'react-router-dom'
+import React,{useEffect,useState} from 'react'
+import { useHistory,useParams } from 'react-router-dom'
 // import Img
 import img from '../../assets/img/common/delivery_success.png'
 import img1 from '../../assets/img/email/success.png'
@@ -14,12 +14,35 @@ import twitter from '../../assets/img/email/twitter.png'
 import gplus from '../../assets/img/email/gplus.png'
 import linkedin from '../../assets/img/email/linkedin.png'
 import pinterest from '../../assets/img/email/pinterest.png'
-
-const OrderSuccess = () => {
+import { connect,useDispatch } from 'react-redux'
+import { ImageUrl } from '../../Redux/Utils/baseurl'
+import { UserOrders } from '../../Redux/Action/allActions'
+const OrderSuccess = (props) => {
     const history = useHistory();
     const routeChange = () => {
         history.goBack()
     };
+    let { id } =useParams()
+    let dispatch=useDispatch()
+    const [OrderDetails,setOrderDetails]=useState([])
+    useEffect(()=>{
+      dispatch(UserOrders())
+    },[])
+    useEffect(()=>{
+      props.Orders.filter((data)=>{
+       if(data.id===Number(id)){
+        setOrderDetails(data)
+       }
+      })
+    },[props.Orders,id])
+    const  Billing =OrderDetails?.billing_info
+    const OrderDetail=Object.values(OrderDetails?.cart ||"") || OrderDetails.cart
+    console.log(OrderDetails,"hjfg")
+    const cartTotal = () => {
+      return OrderDetail.reduce(function (total, item) {
+          return total + ((item.qty || 1) * item.main_price)
+      }, 0)
+  }
     return (
         <>
             <div className="tables_area">
@@ -35,14 +58,14 @@ const OrderSuccess = () => {
                             <td>
                                 <table align="center" border="0" cellPadding="0" cellSpacing="0">
                                     <tbody>
-                                        <tr>
+                                        {/* <tr>
                                             <td>
                                                 <img src={img} alt="img" style={{ marginBottom: "30px" }} />
                                             </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <img src={img1} alt="img" />
+                                        </tr> */}
+                                        <tr >
+                                            <td >
+                                                <img src={img1} alt="img" style={{marginTop:"13px"}}/>
                                             </td>
                                         </tr>
                                         <tr>
@@ -53,16 +76,16 @@ const OrderSuccess = () => {
                                         <tr>
                                             <td>
                                                 <p>Payment Is Successfully Processsed And Your Order Is On The Way</p>
-                                                <p>Transaction ID:267676GHERT105467</p>
+                                                <p>Transaction ID:{OrderDetails?.txnid}</p>
                                             </td>
                                         </tr>
                                         <tr>
                                         </tr>
                                         <tr>
-                                            <td>
+                                            {/* <td>
                                                 <img src={img2} alt="img"
                                                     style={{ marginTop: "30px", marginBottom: "30px" }} />
-                                            </td>
+                                            </td> */}
                                         </tr>
                                     </tbody>
                                 </table>
@@ -78,50 +101,41 @@ const OrderSuccess = () => {
                                 <table className="order-detail" border="0" cellPadding="0" cellSpacing="0" align="left">
                                     <tbody>
                                         <tr align="left">
-                                            <th>PRODUCT</th>
-                                            <th style={{ paddingLeft: " 15px" }}>DESCRIPTION</th>
+                                            <th>IMAGE</th>
+                                            <th style={{ paddingLeft: " 15px" }}>PRODUCTNAME </th>
                                             <th>QUANTITY</th>
                                             <th>PRICE</th>
+                                            <th>TOTAL</th>
                                         </tr>
+                                        {OrderDetail.map((data,index)=>{
+                                          return(
                                         <tr>
                                             <td>
-                                                <img src={pro1} alt="img" width="70" />
+                                                <img src={ImageUrl+data.photo} alt="img" width="70" />
                                             </td>
                                             <td valign="top" style={{ paddingLeft: "15px" }}>
-                                                <h5 style={{ marginTop: "15px" }}>Three seater Wood Style sofa for Leavingroom </h5>
+                                                <h5 style={{ marginTop: "15px" }}>{data.name}</h5>
                                             </td>
                                             <td valign="top" style={{ paddingLeft: "15px" }}>
-                                                <h5 style={{ fontSize: "14px", color: "#444", marginTop: "15px", marginBottom: " 0px" }}>Size :
-                                                    <span> L</span> </h5>
-                                                <h5 style={{ fontSize: "14px", color: "#444", marginTop: "10px" }}>QTY : <span>1</span></h5>
+                                                {/* <h5 style={{ fontSize: "14px", color: "#444", marginTop: "15px", marginBottom: " 0px" }}>Size :
+                                                    <span> L</span> </h5> */}
+                                                <h5 style={{ fontSize: "14px", color: "#444", marginTop: "10px" }}>QTY : <span>{data.qty}</span></h5>
                                             </td>
                                             <td valign="top" style={{ paddingLeft: "15px" }}>
-                                                <h5 style={{ fontSize: "14px", Color: "#444", marginTop: "15px" }}><b>₹500</b></h5>
+                                                <h5 style={{ fontSize: "14px", Color: "#444", marginTop: "15px" }}><b>₹{data.main_price}</b></h5>
+                                            </td>
+                                            <td valign="top" style={{ paddingLeft: "15px" }}>
+                                                <h5 style={{ fontSize: "14px", Color: "#444", marginTop: "15px" }}><b>₹{data.main_price*data.qty}</b></h5>
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td>
-                                                <img src={pro2} alt="img" width="70" />
-                                            </td>
-                                            <td valign="top" style={{ paddingLeft: "15px" }}>
-                                                <h5 style={{ marginTop: "15px" }}>Three seater Wood Style for Badroom </h5>
-                                            </td>
-                                            <td valign="top" style={{ paddingLeft: "15px" }}>
-                                                <h5 style={{ fontSize: "14px", color: "#444", marginTop: "15px", marginBottom: "0px" }}>Size :
-                                                    <span> XL</span> </h5>
-                                                <h5 style={{ fontSize: "14px", color: "#444", marginTop: "10px" }}>QTY : <span>1</span></h5>
-                                            </td>
-                                            <td valign="top" style={{ paddingLeft: "15px" }}>
-                                                <h5 style={{ fontSize: "14px", Color: "#444", marginTop: "15px" }}><b>₹650</b></h5>
-                                            </td>
-                                        </tr>
+                                          )})}
                                         <tr>
                                             <td colSpan="2"
                                                 style={{ lineHeight: "49px", fontSize: "13px", color: "#000000", paddingLeft: "20px", textAlign: "left", borderRight: " unset" }}>
                                                 Products:</td>
                                             <td colSpan="3" className="price"
                                                 style={{ lineHeight: "49px", textAlign: "right", paddingRight: "28px", fontSize: "13px", color: "#000000", TextAlign: "right", borderLeft: "unset" }}>
-                                                <b>₹1150</b></td>
+                                                <b>₹{cartTotal()}</b></td>
                                         </tr>
                                         <tr>
                                             <td colSpan="2"
@@ -129,7 +143,7 @@ const OrderSuccess = () => {
                                                 Discount :</td>
                                             <td colSpan="3" className="price"
                                                 style={{ lineHeight: "49px", textAlign: "right", paddingRight: "28px", fontSize: "13px", color: "#000000", TextAlign: "right", borderLeft: "unset" }}>
-                                                <b>₹10</b></td>
+                                                <b>₹{ 0}</b></td>
                                         </tr>
                                         <tr>
                                             <td colSpan="2"
@@ -137,19 +151,19 @@ const OrderSuccess = () => {
                                                 Gift Wripping: </td>
                                             <td colSpan="3" className="price"
                                                 style={{ lineHeight: "49px", textAlign: "right", paddingRight: "28px", fontSize: "13px", color: "#000000", TextAlign: "right", borderLeft: "unset" }}>
-                                                <b>₹1140</b></td>
+                                                <b>₹0</b></td>
                                         </tr>
                                         <tr>
                                             <td colSpan="2" style={{ lineHeight: "49px", fontSize: "13px", color: "#000000", paddingLeft: "20px", textAlign: "left", borderRight: "unset" }}>Shipping :</td>
                                             <td colSpan="3" className="price"
                                                 style={{ lineHeight: "49px", textAlign: "right", paddingRight: "28px", fontSize: "13px", color: "#000000", TtextAlign: "right", borderLeft: " unset" }}>
-                                                <b>₹30</b></td>
+                                                <b>₹{OrderDetails?.shipping?.price || 0}</b></td>
                                         </tr>
                                         <tr>
                                             <td colSpan="2" style={{ lineHeight: "49px", fontSize: "13px", color: "#000000", paddingLeft: "20px", textAlign: "left", borderRight: "unset" }}>TOTAL PAID :</td>
                                             <td colSpan="3" className="price"
                                                 style={{ lineHeight: "49px", textAlign: "right", paddingRight: "28px", fontSize: "13px", color: "#000000", TextAlign: "right", borderLeft: "unset" }}>
-                                                <b>₹1170</b></td>
+                                                <b>₹{cartTotal()+Number(OrderDetails?.shipping?.price)}</b></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -162,10 +176,10 @@ const OrderSuccess = () => {
                                                 <h5
                                                     style={{ fontSize: "16px", fontWeight: "500", color: "#000", lineHeight: "16px", paddingBottom: "13px", borderBottom: "1px solid #e6e8eb", letterSpacing: "-0.65px", marginTop: "0", marginBottom: "13px" }}>
                                                     DILIVERY ADDRESS</h5>
-                                                <p
+                                                    <p
                                                     style={{ textAlign: "left", fontWeight: "normal", fontSize: "14px", color: "#000000", lineHeight: "21px", marginTop: "0" }}>
-                                                    268 Cambridge Lane New Albany,<br /> IN 47150268 Cambridge Lane <br />New Albany, IN
-                                                    47150</p>
+                                                    {OrderDetails?.billing_info?.bill_address1},<br /> {OrderDetails?.billing_info?.bill_city} <br />{OrderDetails?.billing_info?.bill_country},{OrderDetails?.billing_info?.bill_zip}
+                                                    </p>
                                             </td>
                                             <td width="57" height="25" className="user-info"><img
                                                 src={spoce} alt="img" height="25" width="57" /></td>
@@ -176,8 +190,8 @@ const OrderSuccess = () => {
                                                     SHIPPING ADDRESS</h5>
                                                 <p
                                                     style={{ textAlign: "left", fontWeight: "normal", fontSize: "14px", color: "#000000", lineHeight: "21px", marginTop: "0" }}>
-                                                    268 Cambridge Lane New Albany,<br /> IN 47150268 Cambridge Lane <br />New Albany, IN
-                                                    47150</p>
+                                                    {OrderDetails?.shipping_info?.ship_address1},<br /> {OrderDetails?.shipping_info?.ship_city} <br />{OrderDetails?.shipping_info?.ship_country},{OrderDetails?.shipping_info?.ship_zip}
+                                                    </p>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -247,4 +261,8 @@ const OrderSuccess = () => {
     )
 }
 
-export default OrderSuccess
+const mapStateToProps = (state) =>
+({
+    Orders: state.AllReducer.Orders || []
+});
+export default connect(mapStateToProps)(OrderSuccess);

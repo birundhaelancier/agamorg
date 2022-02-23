@@ -88,9 +88,9 @@
     padding: 80px 0;
     background-position: 95%;
 }
-#product_variation_one .container-fluid .row .col-lg-4:last-child{
+/* #product_variation_one .container-fluid .row .col-lg-4:last-child{
     display: none;
-}
+} */
 .new_header{
     text-align: center;
     font-size: 20px;

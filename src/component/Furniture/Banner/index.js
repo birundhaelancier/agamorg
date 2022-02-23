@@ -13,6 +13,7 @@ const Banner = () => {
         autoplaySpeed: 5000,
         slidesToShow: 1,
         slidesToScroll: 1,
+        // autoplay:true,
         responsive: [{
             breakpoint: 1024,
             settings: {

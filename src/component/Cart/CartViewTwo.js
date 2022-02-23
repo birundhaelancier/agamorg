@@ -11,16 +11,17 @@ const CartViewTwo = () => {
     let carts = useSelector((state) => state.products.carts);
     // Remove Product
     const rmProduct = (id) => {
-        dispatch({ type: "products/removeCart", payload: { id } });
     }
     // Clear Cart
     const clearCarts = () => {
+        
         dispatch({ type: "products/clearCart" });
     }
     // Cart Val Update
     const cartValUpdate = (val, id) => {
         dispatch({ type: "products/updateCart", payload: { val, id } });
     }
+
     return (
         <>
             {carts.length

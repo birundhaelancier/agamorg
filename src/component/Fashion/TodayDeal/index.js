@@ -1,22 +1,24 @@
-import React from 'react'
+import React,{useEffect, useState} from 'react'
 import { useSelector } from "react-redux";
 import ProductCard from '../../Common/Product/ProductCard';
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import Heading from '../Heading';
-
+import axios from 'axios'
 const TodayDeal = () => {
-  let products = useSelector((state) => state.products.products);
+  // let products = useSelector((state) => state.products.products);
+  const [DealList,setDealList]=useState([])
     let settings = {
         arrows: false,
         dots: true,
         margin:30,
-        infinite: true,
+        infinite: false,
         speed: 500, 
         slidesToShow: 4,
         slidesToScroll: 1,
-        responsive: [{
+        responsive: [
+          {
  
             breakpoint: 1024,
             settings: {
@@ -43,23 +45,35 @@ const TodayDeal = () => {
           },
         ]
       };
+      useEffect(()=>{
+        // dispatch(Get_HomeProduct_List("deal"))
+        axios({
+            method: 'post',
+            url:"https://elancier.in/agam/api/homeProduct",
+            data:{"type":"deal"}
+        })
+        .then((response) => {
+            setDealList(response.data)
+        })
+        },[]) 
+        console.log(DealList.length,"DealList")
     return (
     <>
     <section id="to_days_area" className="ptb-100 slider_arrows_one">
-        <div className="container">
-            <Heading heading="ToDay's Deal" para="Lorem Ipsum is simply dummy text of the printing and typesetting industry"/>
+    {DealList.length>0&& <div className="container">
+       <Heading heading="ToDay's Deal" para="Lorem Ipsum is simply dummy text of the printing and typesetting industry"/>
             <div className="row">
                 <div className="col-lg-12">
                     <div className="todays_slider">
                     <Slider {...settings}>
-                    {products.slice(6, 13).map((data, index) =>(
+                    {DealList.length>0&&DealList.map((data, index) =>(
                           <ProductCard data={data} key={index}/>
                      ))}
                   </Slider>
                     </div>
                 </div>
             </div>
-        </div>
+        </div>}
     </section> 
         </>
     )

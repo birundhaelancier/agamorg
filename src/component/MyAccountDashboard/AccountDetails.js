@@ -1,71 +1,122 @@
-import React from 'react'
+import React,{useState,useEffect} from 'react'
+import { useDispatch,connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import img1 from '../../assets/img/team/team1.png'
-const AccountDetails = () => {
+import { Profile_Details } from '../../Redux/Action/allActions'
+const Profile = (props) => {
+    let dispatch=useDispatch()
+    const [profileDetails,setprofileDetails]=useState([])
+    useEffect(()=>{
+     dispatch(Profile_Details())
+    },[])
+    useEffect(()=>{
+        setprofileDetails(props.ProfileData)
+    },[props.ProfileData])
     return (
         <>
-            <div className="myaccount-content">
-                <div className="save_button mt-3 d-flex align-items-center justify-content-between">
-                    <h4 className="title">Account details</h4>
-                    <Link to="/account-edit" className="theme-btn-one bg-black btn_sm">Update Account</Link>
-                </div>
-                <div className="login_form_container">
-                    <div className="account_details_form">
-                        <form action="#">
-                            <div className="img_profiles">
-                                <img src={img1} alt="img" />
+            <div className="vendors_profiles">
+                <h4>Profile</h4>
+                <ul>
+                    {/* <li>
+                        <div className="profils_details_vendor">
+                            <div className="profile_left">
+                                <h4>Company Name:</h4>
                             </div>
-                            <div className="input-radio">
-                                <span className="custom-radio">
-                                    <input type="radio" defaultValue="1" name="mr" checked readOnly /> Mr.</span>
+                            <div className="profile_right">
+                                <h4>Fashion Store</h4>
                             </div>
-                            <div className="default-form-box mb-20">
-                                <label>First Name</label>
-                                <input type="text" name="first-name" className="form-control" defaultValue="Kazi"
-                                    readOnly />
+                        </div>
+                    </li> */}
+                    {/* <li>
+                        <div className="profils_details_vendor">
+                            <div className="profile_left">
+                                <h4>Email Address:</h4>
                             </div>
-                            <div className="default-form-box mb-20">
-                                <label>Last Name</label>
-                                <input type="text" name="last-name" className="form-control" defaultValue="Saiful"
-                                    readOnly />
+                            <div className="profile_right">
+                                <h4>{profileDetails[0]?.email}</h4>
                             </div>
-                            <div className="default-form-box mb-20">
-                                <label>Email</label>
-                                <input type="text" name="email-name" defaultValue="demo123@gmail.com"
-                                    className="form-control" readOnly />
+                        </div>
+                    </li> */}
+                    {/* <li>
+                        <div className="profils_details_vendor">
+                            <div className="profile_left">
+                                <h4>Country / Region:</h4>
                             </div>
-                            <div className="default-form-box mb-20">
-                                <label>Password</label>
-                                <input type="password" name="user-password" defaultValue="123456789"
-                                    className="form-control" readOnly />
+                            <div className="profile_right">
+                                <h4>Downers Grove, IL</h4>
                             </div>
-                            <div className="default-form-box mb-20">
-                                <label>Birthdate</label>
-                                <input type="date" name="birthday" defaultValue="2017-06-01"
-                                    className="form-control" readOnly />
+                        </div>
+                    </li> */}
+                    {/* <li>
+                        <div className="profils_details_vendor">
+                            <div className="profile_left">
+                                <h4>Year Established:</h4>
                             </div>
-                            <span className="example">
-                                (E.g.: 05/31/1970)
-                            </span>
-                            <br />
-                            <label className="checkbox-default" htmlFor="offer">
-                                <input type="checkbox" id="offer" />
-                                <span className="ml-2">Receive offers from our partners</span>
-                            </label>
-                            <br />
-                            <label className="checkbox-default checkbox-default-more-text" htmlFor="newsletter">
-                                <input type="checkbox" id="newsletter" />
-                                <span className="ml-2">Sign up for our newsletter</span>
-                                <p className="mt-2">You may unsubscribe at any
-                                    moment. For that purpose, please find our contact info in the
-                                    legal notice.</p>
-                            </label>
-                        </form>
-                    </div>
+                            <div className="profile_right">
+                                <h4>2018</h4>
+                            </div>
+                        </div>
+                    </li> */}
+                    {/* <li>
+                        <div className="profils_details_vendor">
+                            <div className="profile_left">
+                                <h4>Total Employees:</h4>
+                            </div>
+                            <div className="profile_right">
+                                <h4>101 - 200 People</h4>
+                            </div>
+                        </div>
+                    </li> */}
+                    <li>
+                        <div className="profils_details_vendor">
+                            <div className="profile_left">
+                                <h4>First Name:</h4>
+                            </div>
+                            <div className="profile_right">
+                                <h4>{profileDetails.first_name || "-"}</h4>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div className="profils_details_vendor">
+                            <div className="profile_left">
+                                <h4>Last Name:</h4>
+                            </div>
+                            <div className="profile_right">
+                                <h4>{profileDetails.last_name || "-"}</h4>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div className="profils_details_vendor">
+                            <div className="profile_left">
+                                <h4>Email:</h4>
+                            </div>
+                            <div className="profile_right">
+                                <h4>{profileDetails.email || "-"}</h4>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div className="profils_details_vendor">
+                            <div className="profile_left">
+                                <h4>Phone Number:</h4>
+                            </div>
+                            <div className="profile_right">
+                                <h4>{profileDetails.phone || "-"}</h4>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div className="btn_left_table">
+                    <Link to="/account-edit" className="theme-btn-one bg-black btn_sm">Edit Profile</Link>
                 </div>
             </div>
         </>
     )
 }
 
-export default AccountDetails
+const mapStateToProps = (state) =>
+({
+    ProfileData: state.AllReducer.ProfileData || [],
+});
+export default connect(mapStateToProps)(Profile);

@@ -20,7 +20,7 @@ const SideBar = () => {
 
                             <li><Link to="/vendor/vendor-profile" className={location.pathname === '/vendor/vendor-profile'?'active':null}><i className="fa fa-user-circle"></i>My Account</Link></li>
 
-                            <li><Link to="/contact-two" className={location.pathname === '/contact-two'?'active':null}><i className="fa fa-user"></i>Order trancking</Link></li>
+                            {/* <li><Link to="/contact-two" className={location.pathname === '/contact-two'?'active':null}><i className="fa fa-user"></i>Order trancking</Link></li> */}
                         </ul>
                     </div>
                 </div>

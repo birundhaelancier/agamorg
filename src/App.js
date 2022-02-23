@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect,useState } from 'react';
 import { BrowserRouter as Router, Switch, Route, BrowserRouter } from 'react-router-dom';
 import loadable from './component/Common/loader/loadable';
 import Loading from './component/Common/loader';
 import pMinDelay from 'p-min-delay';
+import { AuthContext } from './context/auth' 
 // const ShopTwo = loadable(() => pMinDelay(import ('./page/shop/shop-two'), 250), { fallback: <Loading />});
 
 
@@ -63,10 +64,19 @@ const ScrollToTop = loadable(() => pMinDelay(import ('./component/Common/ScrollT
 const Fashion = loadable(() => pMinDelay(import ('./page/'), 250));
 const EnquiryArea = loadable(() => pMinDelay(import ('./component/Enquiry'), 250));
 const EnquiryData = loadable(() => pMinDelay(import ('./page/enquiryarea'), 250));
-
+const FarmerDashboard = loadable(() => pMinDelay(import ('./page/FarmerDashboard'), 250));
+const FollowAndFollowings = loadable(() => pMinDelay(import ('./page/FarmerDashboard/FollowAndFollowings'), 250));
+const Post = loadable(() => pMinDelay(import ('./page/FarmerDashboard/Post'), 250));
 const App = () => {
+  const existingTokens = JSON.parse(localStorage.getItem("data"));
+  const [authTokens, setAuthTokens] = useState(existingTokens);
+  const setTokens=(data)=>{
+    localStorage.setItem("data",JSON.stringify(data));
+    localStorage.setItem("UserId",JSON.stringify(data.id))
+    setAuthTokens(data);
+  }
   return (
-    <>
+    <AuthContext.Provider value={{ authTokens, setAuthTokens: setTokens }}>  
       <BrowserRouter>
         <Router>
           <ScrollToTop />
@@ -75,7 +85,7 @@ const App = () => {
             <Route path='/furniture' exact component={Furniture} />
             <Route path='/enquiryarea' exact component={EnquiryData} />
             <Route path='/electronics' exact component={Electronics} />
-            <Route path='/shop' exact component={ShopGrid} />
+            <Route path='/shop/:slug' exact component={ShopGrid} />
             <Route path='/shopTwo' exact component={ShopTwo} />
             <Route path='/shoplist' exact component={ShopList} />
             <Route path='/shop-left-bar' exact component={ShopLeftSideBar} />
@@ -85,7 +95,7 @@ const App = () => {
             <Route path='/cart' exact component={Cart} />
             <Route path='/cartTwo' exact component={CartTwo} />
             <Route path='/empty-cart' exact component={EmptyCarts} />
-            <Route path='/checkout-one' exact component={CheckoutOne} />
+            <Route path='/checkout-one/:discount' exact component={CheckoutOne} />
             <Route path='/checkout-two' exact component={CheckoutTwos} />
             <Route path='/wishlist' exact component={WishLists} />
             <Route path='/compare' exact component={Compares} />
@@ -93,11 +103,11 @@ const App = () => {
             <Route path='/order-tracking' exact component={OrderTracking} />
             <Route path='/about' exact component={About} />
             <Route path='/product-hover' exact component={ProductHover} />
-            <Route path='/order-success' exact component={OrderSuccesses} />
+            <Route path='/order-success/:id' exact component={OrderSuccesses} />
             <Route path='/email-template-one' exact component={EmailTemplateOnes} />
             <Route path='/email-template-two' exact component={EmailTemplateTwos} />
             <Route path='/email-template-three' exact component={EmailTemplateThrees} />
-            <Route path='/invoice-one' exact component={InvoiceOne} />
+            <Route path='/invoice-one/:id' exact component={InvoiceOne} />
             <Route path='/invoice-two' exact component={InvoiceTwo} />
             <Route path='/lookbooks' exact component={LookBooks} />
             <Route path='/blog-grid-three' exact component={BlogGridThrees} />
@@ -124,12 +134,16 @@ const App = () => {
             <Route path='/coming-soon' exact component={ComingSoon} />
             <Route path='/contact-one' exact component={ContactOne} />
             <Route path='/contact-two' exact component={ContactTwo} />
+            <Route path='/farmer-dashboard' exact component={FarmerDashboard} />
+            <Route path='/farmer-followers' exact component={FollowAndFollowings} />
+            <Route path='/farmer-posts' exact component={Post} />
+            
             <Route exact component={Error} />
           </Switch>
         </Router>
       </BrowserRouter>
 
-    </>
+      </AuthContext.Provider>
   );
 }
 

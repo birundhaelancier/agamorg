@@ -1,33 +1,89 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ProductCard from '../Common/Product/ProductCard'
 import Filter from './Filter'
-import { useSelector } from "react-redux";
-const Shop = () => {
+import { useSelector,useDispatch,connect } from "react-redux";
+import { CategoryList_api } from '../../Redux/Action/allActions'
+import Slider from "react-slick";
 
-    const [products, setProducts] = useState(useSelector((state) => state.products.products))
+const Shop = (props) => {
+     let dispatch=useDispatch()
+    const [products, setProducts] = useState([])
+    const [product_slide,setproduct_slide]=useState(0)
+    const [FilterProduct,setFilterProduct]=useState([])
     const [page, setPage] = useState(1)
-    let allData = [...useSelector((state) => state.products.products)];
+    // let allData = [...useSelector((state) => state.products.products)];
 
     const randProduct = (page) => {
         if (page) {
-            let data = allData.sort((a, b) => 0.5 - Math.random())
-            setProducts(data);
+            let data = products?.products.sort((a, b) => 0.5 - Math.random())
+            setFilterProduct(data);
             setPage(page);
         }
     }
+    
+useEffect(()=>{
+ setProducts(props.ProductsData)
+},[props.ProductsData])
+console.log(products,"products")
+let settings = {
+  customPaging: function(i) {
+      return (
+        <div  className="pagination">
+          <div className={`page-item ${i===product_slide? "active":""}`} onClick={()=>setproduct_slide(i)}><a className="page-link" href="#!">{i+1}</a></div>
+        </div>
+      );
+    },
+  arrows: false,
+  dots: true,
+  infinite: false,
+  slidesToShow:4,
+  slidesToScroll: 1,
+  // variableWidth:true,
+  rows: 2,
+  // slidesPerRow: 2,
+  responsive: [
+      {
+
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+        }
+      }, 
+      {
+        breakpoint: 768,
+        settings: {
+          slidesToShow: 2,
+        }
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+        }
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+        }
+      },
+    ]
+};
 
     return (
         <>
             <section id="shop_main_area" className="ptb-100">
                 <div className="container">
                     <Filter filterEvent={randProduct}/>
-                    <div className="row">
-                        {products.map((data, index) => (
-                            <div className="col-lg-3 col-md-4 col-sm-6 col-12" key={index}>
+                    {/* <div className="row"> */}
+                      <Slider {...settings}>
+                        {products?.products?.map((data, index) => (
+                            // <div className="col-lg-3 col-md-4 col-sm-6 col-12" key={index}>
                                 <ProductCard data={data} />
-                            </div>
+                            //  </div>
                         ))}
-                        <div className="col-lg-12">
+                        </Slider>
+                         {/* <div className="col-lg-12">
                             <ul className="pagination">
                                 <li className="page-item" onClick={(e) => { randProduct(page > 1 ? page - 1 : 0) }}>
                                     <a className="page-link" href="#!" aria-label="Previous">
@@ -43,12 +99,16 @@ const Shop = () => {
                                     </a>
                                 </li>
                             </ul>
-                        </div>
-                    </div>
+                        </div>  */}
+                     {/* </div>  */}
                 </div>
             </section>
         </>
     )
 }
 
-export default Shop
+const mapStateToProps = (state) =>
+({
+    Category_List: state.AllReducer.Category_List || [],
+});
+export default connect(mapStateToProps)(Shop);

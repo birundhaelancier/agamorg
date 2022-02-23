@@ -4,7 +4,7 @@ import LineChart from './LineChart'
 import { useSelector } from "react-redux";
 import { Link } from 'react-router-dom';
 const Dashboard = () => {
-    let products = useSelector((state) => state.products.products);
+    // let products = useSelector((state) => state.products.products);
     return (
         <>
             <div className="row">
@@ -53,14 +53,14 @@ const Dashboard = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {products.slice(1, 5).map((data, index)=>(
+                                {/* {products.slice(1, 5).map((data, index)=>(
                                     <tr key={index}>
                                      <td><Link to={ `/product-details-one/${data.id}`}><img width="52px" src={data.img} alt="img" /></Link></td>
                                      <td><Link to={ `/product-details-one/${data.id}`}>{data.title}</Link></td>
                                      <td>₹{data.price}</td>
                                      <td>{parseInt(data.price)*3}</td>
                                     </tr>
-                                ))}
+                                ))} */}
                                
                             </tbody>
                         </table>

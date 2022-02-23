@@ -1,6 +1,17 @@
-import React from 'react'
+import React, { useEffect,useState } from 'react'
 import { Link } from 'react-router-dom'
-const AllOrder = () => {
+import { UserOrders } from '../../Redux/Action/allActions'
+import { connect, useDispatch } from 'react-redux'
+import moment from 'moment'
+const AllOrder = (props) => {
+    let dispatch=useDispatch()
+    const [OrderDetails,setOrderDetails]=useState([])
+    useEffect(()=>{
+      dispatch(UserOrders())
+    },[])
+    useEffect(()=>{
+        setOrderDetails(props.Orders)
+    },[props.Orders])
     return (
         <>
             <div className="row">
@@ -12,55 +23,24 @@ const AllOrder = () => {
                                 <thead className="thead-light">
                                     <tr>
                                         <th scope="col">Order Id</th>
-                                        <th scope="col">Product Details</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Payment Type</th>
                                         <th scope="col">Status</th>
                                         <th scope="col">Price</th>
                                     </tr>
                                 </thead>
+                                {OrderDetails?.map((data)=>
                                 <tbody>
                                 <tr>
-                                    <td><Link to="/invoice-one" className="text-primary">#78153</Link></td>
-                                    <td>Belted Trench Coat</td>
-                                    <td><span className="badge badge-info">Shipped</span></td>
-                                    <td>₹50</td>
+                                    <td><Link to={`/invoice-one/${data.id}`} className="text-primary">#{data.txnid}</Link></td>
+                                    <td>{moment(data.created_at).format("DD-MM-YYYY")}</td>
+                                    <td>{data.payment_method}</td>
+                                    <td><span className="badge badge-info">{data.order_status}</span></td>
+                                    <td>₹{data.orderTotal}</td>
                                 </tr>
-                                <tr>
-                                    <td><Link to="/invoice-one" className="text-primary">#78154</Link></td>
-                                    <td>Neck Velvet Dress</td>
-                                    <td><span className="badge badge-warning">Pending</span></td>
-                                    <td>₹50</td>
-                                </tr>
-                                <tr>
-                                    <td><Link to="/invoice-one" className="text-primary">#78155</Link></td>
-                                    <td>T-Shirt For Woman</td>
-                                    <td><span className="badge badge-success">Confrimed</span></td>
-                                    <td>₹58</td>
-                                </tr>
-                                <tr>
-                                    <td><Link to="/invoice-one" className="text-primary">#78156</Link></td>
-                                    <td>Fit-Flare Dress</td>
-                                    <td><span className="badge badge-danger">Canceled</span></td>
-                                    <td>₹50</td>
-                                </tr>
-                                <tr>
-                                    <td><Link to="/invoice-one" className="text-primary">#78157</Link></td>
-                                    <td>Long-Shirt For Men</td>
-                                    <td><span className="badge badge-info">Shipped</span></td>
-                                    <td>₹50</td>
-                                </tr>
-                                <tr>
-                                    <td><Link to="/invoice-one" className="text-primary">#78158</Link></td>
-                                    <td>Sharee for women</td>
-                                    <td><span className="badge badge-info">Shipped</span></td>
-                                    <td>₹50</td>
-                                </tr>
-                                <tr>
-                                    <td><Link to="/invoice-one" className="text-primary">#78159</Link></td>
-                                    <td>Handbag for Girls</td>
-                                    <td><span className="badge badge-info">Shipped</span></td>
-                                    <td>₹50</td>
-                                </tr>
+                                
                                 </tbody>
+                                )}
                             </table>
                         </div>
                         <div className="col-lg-12">
@@ -87,4 +67,8 @@ const AllOrder = () => {
     )
 }
 
-export default AllOrder
+const mapStateToProps = (state) =>
+({
+    Orders: state.AllReducer.Orders || []
+});
+export default connect(mapStateToProps)(AllOrder);
