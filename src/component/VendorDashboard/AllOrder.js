@@ -32,7 +32,7 @@ const AllOrder = (props) => {
                                 {OrderDetails?.map((data)=>
                                 <tbody>
                                 <tr>
-                                    <td><Link to={`/invoice-one/${data.id}`} className="text-primary">#{data.txnid}</Link></td>
+                                    <td><Link to={`/order-success/${data.txnid}`} className="text-primary">#{data.txnid}</Link></td>
                                     <td>{moment(data.created_at).format("DD-MM-YYYY")}</td>
                                     <td>{data.payment_method}</td>
                                     <td><span className="badge badge-info">{data.order_status}</span></td>
@@ -43,7 +43,7 @@ const AllOrder = (props) => {
                                 )}
                             </table>
                         </div>
-                        <div className="col-lg-12">
+                        {/* <div className="col-lg-12">
                             <ul className="pagination">
                                 <li className="page-item">
                                     <a href="#!" className="page-link">
@@ -59,7 +59,7 @@ const AllOrder = (props) => {
                                     </a>
                                 </li>
                             </ul>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

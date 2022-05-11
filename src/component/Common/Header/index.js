@@ -8,11 +8,12 @@ import TopHeader from "./TopHeader";
 import { useHistory } from "react-router-dom";
 import svg from "../../../assets/img/svg/cancel.svg";
 import svgsearch from "../../../assets/img/svg/search.svg";
+import no_image from '../../../assets/img/no_image.jpg'
 import LocationModal from "./LocationModal";
 import { useDispatch, useSelector,connect } from "react-redux";
 import Swal from "sweetalert2";
 import List from "@mui/material/List";
-import { ListItemButton,ListItemText,Collapse } from "@mui/material";
+import { ListItemButton,ListItemText,Collapse,ListItemIcon } from "@mui/material";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import { ProductData } from '../../../app/data/productsData'
@@ -25,6 +26,7 @@ import { Autocomplete,InputAdornment,Box} from '@mui/material';
 import  { createFilterOptions } from '@mui/material/Autocomplete';
 import NewsletterModal from '../NewModel'
 import axios from 'axios'
+import { notification } from "antd";
 // const MenuData = []
 const Header = (props) => {
   const [click, setClick] = useState(false);
@@ -36,21 +38,17 @@ const Header = (props) => {
   const [WishListData,setWishListData]=useState([])
   const [show, setShow] = useState();
   const [location, setLocation] = useState(false);
-  const [ShoopingCarts,setShoopingCarts]=useState(JSON.parse(window.localStorage.getItem("carts")) || [])
+  const [ShoopingCarts,setShoopingCarts]=useState(JSON.parse(localStorage.getItem("carts")) || [])
   const history = useHistory();
   const [open2, setOpen2] = useState(false);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
 
   let dispatch = useDispatch();
 
   const rmCartProduct = (id) => {
-    Swal.fire({
-      title: 'Success!',
-      text: "Product Deleted Successfully",
-      icon: 'success',
-      showConfirmButton: false,
-      timer: 1000
+    notification.success({
+      message: "Product Deleted Successfully",
     })
     let arr = ShoopingCarts?.filter(item => item.id !== id)
     window.localStorage.setItem("carts",JSON.stringify(arr))
@@ -71,7 +69,8 @@ const Header = (props) => {
     }, 0);
   };
 
-  const handleClick = () => {
+  const handleClick = (props) => {
+    setClick(!click || props);
     if (click) {
       document.querySelector("#offcanvas-add-cart").style =
         "transform: translateX(100%);";
@@ -79,7 +78,6 @@ const Header = (props) => {
       document.querySelector("#offcanvas-add-cart").style =
         "transform: translateX(0%);";
     }
-    setClick(!click);
   };
   const handleWish = () => {
     if (click) {
@@ -137,11 +135,15 @@ const Header = (props) => {
   });
 
   const isSticky = (e) => {
-    const header = document.querySelector(".header-section");
+    const header = document.querySelector(".header-sect");
+    const header2 =document.querySelector(".header-section");
     const scrollTop = window.scrollY;
     scrollTop >= 250
       ? header.classList.add("is-sticky")
       : header.classList.remove("is-sticky");
+    scrollTop >= 250
+      ? header2.classList.add("is-sticky")
+      : header2.classList.remove("is-sticky");
   };
   useEffect(()=>{
     dispatch(Get_Wishlist())
@@ -189,17 +191,19 @@ const ChangeSearchList=(event,data)=>{
   })
   FilterData.product.filter((item)=>{
     if(data?.name===item?.name){
-      history.push(`/product-details-one/${item.slug}`)
+      history.push(`/product-details-one/${item.slug}/${data.id}`)
     }
   })
   
 }
-
-
+useEffect(()=>{
+  setClick(props.click)
+},[props.click])
 
   return (
     <>
-      <TopHeader />
+      <TopHeader click={handleabout}/>
+      <div>
       <header className="header-section d-none d-xl-block">
         <div className="header-wrapper">
           <div className="header-bottom header-bottom-color--golden section-fluid sticky-header sticky-color--golden">
@@ -210,16 +214,16 @@ const ChangeSearchList=(event,data)=>{
                     <div className="header-logo">
                       <div className="logo">
                         <Link to="/">
-                          <img src={logo} alt="logo" />
+                          <img src={"https://agamorg.com/admin/assets/images/login_logo.png"} alt="logo" />
                         </Link>
                       </div>
                     </div>
-                    <div className="logoTitle">
+                    {/* <div className="logoTitle">
                       <div className="agamTitle">Agam</div>
                       <div className="organicTitle">org</div>
-                    </div>
+                    </div> */}
                   </div>
-                  <div className="location_point"   onClick={() => setLocation(true)}>
+                  {/* <div className="location_point"   onClick={() => setLocation(true)}>
                     <i
                       class="fa fa-map-marker loca"
                     
@@ -229,13 +233,12 @@ const ChangeSearchList=(event,data)=>{
                       <div>Hello</div>
                       <div>Select Your Address</div>
                     </div>
-                    {/* <input type="number" className="form-control" placeholder="Enter Your Pincode" required /> */}
-                  </div>
+                  </div> */}
                   <div className="SearchView">
                     <div className="search_space">
                       <div class="wrapper">
 
-                        <div className="input-group md-form form-sm form-1 pl-0">
+                        <div className="input-group md-form form-sm form-1 pl-0 auto_search">
                           {/* <input
                             className="form-control my-0 py-1"
                             type="text"
@@ -253,13 +256,16 @@ const ChangeSearchList=(event,data)=>{
                         renderOption={(props, option) => (
                             
                                       <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                                      {option.photo?<img
+                                      {option.photo&&<img
                                         loading="lazy"
                                         width="40"
+                                        style={{width:"40px",height:"40px"}}
                                         src={ImageUrl+option?.photo}
                                         alt=""
                                       />
-                                      : <span style={{width:"40px"}}><i className="fa fa-search srch_btn"></i></span>}
+                                      // : ""
+                                      // <span style={{width:"40px"}}><i className="fa fa-search"></i></span>
+                                      }
                                       <span>{option?.name}</span>
                                     </Box>
                                  
@@ -272,7 +278,7 @@ const ChangeSearchList=(event,data)=>{
                       // getOptionSelected={(option, value) => option.title === value.title}
                       getOptionLabel={(option) => option.name}
                      renderInput={(params) => (
-                     <TextField {...params} size="Normal" InputLabelProps={{shrink:false}} InputProps={{...params.InputProps,type: 'search',
+                     <TextField {...params} size="Normal"   InputLabelProps={{shrink:false}} placeholder="Search" InputProps={{...params.InputProps,type: 'search',
                        endAdornment: <InputAdornment>  <i className="fa fa-search search_icon"></i> </InputAdornment>,
                      }}
                     />
@@ -296,7 +302,6 @@ const ChangeSearchList=(event,data)=>{
                     <li>
                       {WishListData?.length ? (
                         <a
-                          href="#offcanvas-wishlish"
                           className="offcanvas-toggle"
                           onClick={handleWish}
                         >
@@ -305,7 +310,6 @@ const ChangeSearchList=(event,data)=>{
                         </a>
                       ) : (
                         <a
-                          href="#offcanvas-wishlish"
                           className="offcanvas-toggle"
                         >
                           <i className="fa fa-heart"></i>
@@ -316,7 +320,6 @@ const ChangeSearchList=(event,data)=>{
                     <li>
                       {ShoopingCarts?.length ? (
                         <a
-                          href="#!"
                           className="offcanvas-toggle"
                           onClick={handleClick}
                         >
@@ -324,7 +327,7 @@ const ChangeSearchList=(event,data)=>{
                           <span className="item-count">{ShoopingCarts?.length || 0}</span>
                         </a>
                       ) : (
-                        <a href="#!" className="offcanvas-toggle">
+                        <a className="offcanvas-toggle">
                           <i className="fa fa-shopping-bag"></i>
                           <span className="item-count">{ShoopingCarts?.length || 0}</span>
                         </a>
@@ -333,7 +336,6 @@ const ChangeSearchList=(event,data)=>{
 
                     <li>
                       <a
-                        href="#offcanvas-about"
                         className="offacnvas offside-about offcanvas-toggle"
                         onClick={handleabout}
                       >
@@ -367,6 +369,7 @@ const ChangeSearchList=(event,data)=>{
                     </div>
                 </div> */}
       </header>
+      </div>
       {/* <header className="header-section d-none d-xl-block">
                 <div className="header-wrapper">
                     <div className="header-bottom header-bottom-color--golden section-fluid sticky-header sticky-color--golden">
@@ -392,21 +395,20 @@ const ChangeSearchList=(event,data)=>{
                     </div>
                 </div>
             </header> */}
-
-      <div className="mobile-header sticky-header sticky-color--golden mobile-header-bg-color--golden section-fluid d-lg-block d-xl-none">
+      <div className="mobile-header  sticky-header sticky-color--golden mobile-header-bg-color--golden section-fluid d-lg-block d-xl-none header-sect">
         <div className="container">
           <div className="row">
             <div className="col-12 d-flex align-items-center justify-content-between">
               <div className="mobile-header-left  d-flex align-items-center">
                 <ul className="mobile-menu-logo">
                   <li>
-                    <a href="index.html">
-                      <div className="logo footerlogoTitle">
-                        <img src={logo} alt="logo" />
+                    <Link to="/">
+                      {/* <div className="logo footerlogoTitle">
+                        <img src={"https://agamorg.com/admin/assets/images/login_logo.png"} alt="logo" />
                         <div className='agamTitle'>Agam</div>
-                                        <div className='organicTitle'>org</div>
-                      </div>
-                    </a>
+                        <div className='organicTitle'>org</div>
+                      </div> */}
+                    </Link>
                   </li>
                 
                 </ul>
@@ -414,9 +416,15 @@ const ChangeSearchList=(event,data)=>{
 
               <div className="mobile-right-side">
                 <ul className="header-action-link action-color--black action-hover-color--golden">
+                {/* <li className="location_point"   onClick={() => setLocation(true)}>
+                    <i
+                      class="fa fa-map-marker loca"
+                    
+                      aria-hidden="true"
+                    ></i>
+                  </li> */}
                   <li>
                     <a
-                      href="#!"
                       className="search_width"
                       onClick={handleSearch}
                     >
@@ -426,7 +434,6 @@ const ChangeSearchList=(event,data)=>{
                   <li>
                     {WishListData.length ? (
                       <a
-                        href="#offcanvas-wishlish"
                         className="offcanvas-toggle"
                         onClick={handleWish}
                       >
@@ -435,7 +442,6 @@ const ChangeSearchList=(event,data)=>{
                       </a>
                     ) : (
                       <a
-                        href="#offcanvas-wishlish"
                         className="offcanvas-toggle"
                       >
                         <i className="fa fa-heart"></i>
@@ -446,7 +452,7 @@ const ChangeSearchList=(event,data)=>{
                   <li>
                     {ShoopingCarts?.length ? (
                       <a
-                        href="#!"
+                       
                         className="offcanvas-toggle"
                         onClick={handleClick}
                       >
@@ -454,7 +460,7 @@ const ChangeSearchList=(event,data)=>{
                         <span className="item-count">{ShoopingCarts?.length || 0}</span>
                       </a>
                     ) : (
-                      <a href="#!" className="offcanvas-toggle">
+                      <a className="offcanvas-toggle">
                         <i className="fa fa-shopping-bag"></i>
                         <span className="item-count">{ShoopingCarts?.length || 0}</span>
                       </a>
@@ -462,7 +468,7 @@ const ChangeSearchList=(event,data)=>{
                   </li>
                   <li>
                     <a
-                      href="#!"
+                     
                       className="offcanvas-toggle offside-menu"
                       onClick={handleabout}
                     >
@@ -481,19 +487,35 @@ const ChangeSearchList=(event,data)=>{
         id="offcanvas-about"
         className="offcanvas offcanvas-rightside offcanvas-mobile-about-section"
       >
+       
         <div className="mobile-menu-bottom">
-          <div className="offcanvas-header text-right">
+          <div style={{justifyContent:"space-between",display:"flex",alignItems:"center"}}>
+        <ul className="mobile-menu-logo" style={{width:"auto"}}>
+                  <li>
+                    <Link to="/">
+                      <div className="logo footerlogoTitle " style={{width:"auto"}}>
+                        <img src={"https://agamorg.com/admin/assets/images/login_logo.png"} alt="logo" style={{width:"75%"}}/>
+                        {/* <div className='agamTitle'>Agam</div>
+                                        <div className='organicTitle' style={{color:"#fff"}}>org</div> */}
+                      </div>
+                    </Link>
+                  </li>
+                
+                </ul>
+          <div className="offcanvas-header text-right" style={{display:"flex",alignItems:"center",justifyContent:"center"}}>
             <button className="offcanvas-close" onClick={handleabout}>
               <img src={svg} alt="icon" />
             </button>
           </div>
-    
+          </div>
           <List
             sx={{ width: "100%", maxWidth: 360}}
             component="nav"
             aria-labelledby="nested-list-subheader"
           >
             <ListItemButton component={Link} to="/">
+
+            
               <ListItemText primary="Home" />
               {/* <i class="fas fa-home"></i> */}
             </ListItemButton>
@@ -511,13 +533,18 @@ const ChangeSearchList=(event,data)=>{
                 )})}
               </List>
             </Collapse>
-            <ListItemButton component={Link} to="/shop">
+            {/* <ListItemButton component={Link}>
               <ListItemText primary="Offer" />
-            </ListItemButton>
-            <ListItemButton component={Link} to="/blog-grid-three">
+            </ListItemButton> */}
+           {/* {JSON.parse(localStorage.getItem("data"))?.type===2 ?  */}
+           <ListItemButton component={Link} to="/farmer-posts">
               <ListItemText primary="Post" />
             </ListItemButton>
-            <ListItemButton onClick={() => setOpen2(!open2)}>
+            {JSON.parse(localStorage.getItem("data"))?.type===2 ?<ListItemButton component={Link} to="/vendor/all-product">
+              <ListItemText primary="Stock List" />
+            </ListItemButton>:""}
+            {/* :""} */}
+            {/* <ListItemButton onClick={() => setOpen2(!open2)}>
               <ListItemText primary="Contact Us" />
               {open2 ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
@@ -531,7 +558,7 @@ const ChangeSearchList=(event,data)=>{
                   <ListItemText primary="Vendar Dashboard" />
                 </ListItemButton>
               </List>
-            </Collapse>
+            </Collapse> */}
           </List>
         </div>
       </div>
@@ -552,18 +579,18 @@ const ChangeSearchList=(event,data)=>{
               <li className="offcanvas-wishlist-item-single" key={index}>
                 <div className="offcanvas-wishlist-item-block">
                   <Link
-                    to={`/product-details-one/${data.slug}`}
+                    to={`/product-details-one/${data.slug}/${data.id}`}
                     className="offcanvas-wishlist-item-image-link"
                   >
                     <img
-                      src={ImageUrl+data.photo}
+                      src={data.flag===2?no_image:ImageUrl+data.photo}
                       alt="img"
                       className="offcanvas-wishlist-image"
                     />
                   </Link>
                   <div className="offcanvas-wishlist-item-content">
                     <Link
-                      to={`/product-details-one/${data.slug}`}
+                      to={`/product-details-one/${data.slug}/${data.id}`}
                       className="offcanvas-wishlist-item-link"
                     >
                       {data.name}
@@ -579,12 +606,11 @@ const ChangeSearchList=(event,data)=>{
                         {data.pack || 1}
                       </span>
                     </div>
-                    <div style={{color:"green"}}> ₹{data.discount_price*data.quantity}</div>
+                    <div style={{color:"green"}}> <i class="fa fa-inr"></i> {data.discount_price*data.quantity}</div>
                   </div>
                 </div>
                 <div className="offcanvas-wishlist-item-delete text-right">
                   <a
-                    href="#!"
                     className="offcanvas-wishlist-item-delete"
                     onClick={() => rmCartProduct(data.id)}
                   >
@@ -597,14 +623,14 @@ const ChangeSearchList=(event,data)=>{
           <div className="offcanvas-cart-total-price">
             <span className="offcanvas-cart-total-price-text">Subtotal:</span>
             <span className="offcanvas-cart-total-price-value">
-              ₹{cartTotal()}.00
+            <i class="fa fa-inr"></i> {cartTotal()}.00
             </span>
           </div>
           <ul className="offcanvas-cart-action-button">
             <li>
               <Link
                 to="/cart"
-                className="theme-btn-one btn-black-overlay btn_md"
+                className="theme-btn-one btn-black-overlay btn_md view_cart_btn"
               >
                 View Cart
               </Link>
@@ -620,7 +646,7 @@ const ChangeSearchList=(event,data)=>{
                   }
                   
                 }}
-                className="theme-btn-one btn-black-overlay btn_md"
+                className="theme-btn-one btn-black-overlay btn_md view_cart_btn"
               >
                 Checkout
               </a>

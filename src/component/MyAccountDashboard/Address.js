@@ -14,7 +14,6 @@ const Address = (props) => {
     useEffect(()=>{
         setprofileDetails(props.ProfileData)
     },[props.ProfileData,props.Address_list])
-    console.log(props.Address_list)
     const  Details =props?.Address_list
     return (
         <>
@@ -30,7 +29,7 @@ const Address = (props) => {
                             </p>
                             <p>Mobile: {profileDetails.phone}</p>
                             <button className="theme-btn-one bg-black btn_sm mt-4"  onClick={()=>history.push(`/checkout-one/${"no"}`)}>Edit
-                                Address</button>
+                               Address</button>
                         </div>
                     </div>
                 </div>

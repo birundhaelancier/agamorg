@@ -26,11 +26,12 @@ const Order = (props) => {
                             <table className="table pending_table">
                                 <thead className="thead-light">
                                     <tr>
+                                        <th scope="col">Order Id</th>
                                         <th scope="col">Date</th>
-                                        <th scope="col">Payment Type</th>
-                                        <th scope="col">Status</th>
+                                        {/* <th scope="col">Payment Type</th> */}
+                                        {/* <th scope="col">Status</th> */}
                                         <th scope="col">Price</th>
-                                        <th scope="col">Action</th>
+                                        {/* <th scope="col" className='mobile_view__order'>Action</th> */}
 
                                     </tr>
                                 </thead>
@@ -38,11 +39,14 @@ const Order = (props) => {
                                 <tbody>
                                 <tr>
                                     {/* <td><Link to={`/invoice-one/${data.id}`} className="text-primary">#{data.txnid}</Link></td> */}
-                                    <td>{moment(data.created_at).format("DD-MM-YYYY")}</td>
+                                    {/* <td>{moment(data.created_at).format("DD-MM-YYYY")}</td>
                                     <td>{data.payment_method}</td>
                                     <td><span className={`badge ${data.order_status==="Pending"?"badge-warning":data.order_status==="Completed"?"badge-success":"badge-info"}`}>{data.order_status}</span></td>
                                     <td>₹{data.orderTotal}</td>
-                                    <td><Link to={`/order-success/${data.id}`} className="view">view</Link></td>
+                                    <td className='mobile_view__order'><Link to={`/order-success/${data.id}`} className="view">view</Link></td> */}
+                                      <td><Link to={`/order-success/${data.txnid}`} className="text-primary">#{data.txnid}</Link></td>
+                                    <td>{moment(data.created_at).format("DD-MM-YYYY")}</td>
+                                    <td><span>₹{data.orderTotal}</span></td>
 
                                 </tr>
                                 
@@ -50,7 +54,7 @@ const Order = (props) => {
                                 )}
                             </table>
                         </div>
-                        <div className="col-lg-12">
+                        {/* {OrderDetails.length>0&&<div className="col-lg-12">
                             <ul className="pagination">
                                 <li className="page-item">
                                     <a href="#!" className="page-link">
@@ -66,7 +70,7 @@ const Order = (props) => {
                                     </a>
                                 </li>
                             </ul>
-                        </div>
+                        </div>} */}
                     </div>
                 </div>
             </div>

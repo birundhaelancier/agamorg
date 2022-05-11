@@ -6,7 +6,8 @@ import { useHistory } from 'react-router-dom'
 import Swal from "sweetalert2";
 import { FacebookShareButton, TwitterShareButton, LinkedinShareButton, TelegramShareButton, WhatsappShareButton } from "react-share";
 import { FacebookIcon, TwitterIcon, LinkedinIcon, TelegramIcon, WhatsappIcon } from "react-share";
-
+import { ImageUrl } from '../../../Redux/Utils/baseurl'
+import { notification } from 'antd';
 const MyVerticallyCenteredModal = (props) => {
     let dispatch = useDispatch();
     let history=useHistory()
@@ -18,11 +19,9 @@ const MyVerticallyCenteredModal = (props) => {
     const [count, setCount] = useState(1)
 
     const incNum = () => {
-        console.log(1);
         setCount(count + 1)
     }
     const decNum = () => {
-        console.log(2);
         if (count > 1) {
             setCount(count - 1)
         } else {
@@ -57,7 +56,7 @@ const MyVerticallyCenteredModal = (props) => {
             attributeId:filterPack?.id
         })
            setCartsDetails(items);
-           Swal.fire('Success', "Successfully added to your Cart", 'success') 
+           notification.success({message:"Successfully added to your Cart"}) 
                props.onHide()
        }
     }
@@ -86,6 +85,7 @@ const MyVerticallyCenteredModal = (props) => {
          setcartChange(false) 
         }
      },[CartsDetails])
+     console.log()
     return (
         <>
             <Modal {...props}
@@ -101,7 +101,7 @@ const MyVerticallyCenteredModal = (props) => {
                                 <div className="row">
                                     <div className="col-lg-5 col-md-6 col-sm-12 col-12">
                                         <div className="products_modal_sliders">
-                                            <img src={"https://elancier.in/agam/assets/images/"+props.data?.photo} alt="img" />
+                                            <img src={ImageUrl+props.data?.photo} alt="img" />
                                         </div>
                                     </div>
                                     <div className="col-lg-7 col-md-6 col-sm-12 col-12">
@@ -111,14 +111,14 @@ const MyVerticallyCenteredModal = (props) => {
                                                 <RatingStar maxScore={5} rating={props.data.discount_price} id="rating-star-modal" />
                                                 <span>({props.data.discount_price} Customer Reviews)</span>
                                             </div> */}
-                                            <h4>₹{filterPack?filterPack.selling:props.data.discount_price}.00 <del style={{fontWeight: 400, color: 'gray'}}>${parseInt(filterPack?filterPack.price:props.data.previous_price)}.00</del> </h4>
+                                            <h4><i class="fa fa-inr"></i> {filterPack?filterPack.selling:props.data.discount_price}.00 <del style={{fontWeight: 400, color: 'gray'}}>${parseInt(filterPack?filterPack.price:props.data.previous_price)}.00</del> </h4>
                                             <p>{props.data.description}</p>
-                                            {props.data.attribute.length>0&&
+                                            {props.data.attribute.length>0&& props.data.stock !==0 &&
                                             <div className="customs_selects" >
-                                        <select name="product" className="customs_sel_box product_card_select" style={{minHeight:"30px"}} onChange={(e)=>ChangeAttribute(e.target.value)} value={selectpack}>
+                                        <select name="product" className="customs_sel_box product_card_select" style={{minHeight:"30px",width:"60%"}} onChange={(e)=>ChangeAttribute(e.target.value)} value={selectpack}>
                                          {props.data.attribute.map((data)=>{
                                              return(
-                                               <option value={data.name}>{data.name} - ₹{data.price}</option>
+                                               <option value={data.name}>{data.name} - <i class="fa fa-inr"></i> {data.price}</option>
                                               )})}
                                          </select>
                                           </div>}
@@ -144,7 +144,7 @@ const MyVerticallyCenteredModal = (props) => {
                                                     </label>
                                                 </div>
                                             </div> */}
-                                            <form id="product_count_form_one">
+                                            {props.data.stock !==0?<form id="product_count_form_one">
                                                 <div className="product_count_one">
                                                     <div className="plus-minus-input">
                                                         <div className="input-group-button">
@@ -159,9 +159,12 @@ const MyVerticallyCenteredModal = (props) => {
                                                             </button>
                                                         </div>
                                                     </div>
+                                                   
                                                     <a href="#!" className="theme-btn-one btn-black-overlay btn_sm" onClick={() => addToCart(props.data)}>{!cartChange?"Add To Cart":"Go To Cart"}</a>
+                                                  
                                                 </div>
                                             </form>
+                                            :<span class="badge badge-warning" style={{fontSize:"17px",color:"#fff",padding:"6px 30px"}}>Out of Stock</span>}
                                             <div className="modal_share_icons_one">
                                                 <h4>SHARE THIS PRODUCT</h4>
                                                 <div className="posted_icons_one">

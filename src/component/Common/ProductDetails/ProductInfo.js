@@ -3,48 +3,29 @@ import React from 'react'
 import user1 from '../../../assets/img/user/user1.png'
 import user2 from '../../../assets/img/user/user2.png'
 import user3 from '../../../assets/img/user/user3.png'
+const ProductInfo = ({Details}) => {
+    const Speci_Name= Details?.specification_description?.split(',').map((data, index)=>{
+            if(index === 0){
+                return data?.replace('[\"', '')
+            }else if((Details?.specification_description?.split(',').length - 1) === index){
+                return data?.replace('\"]', '')
+            }
+            else{
+                return data.replace('"','')
+            }
+        })
 
-const ReviewData = [
-    {
-        img: user1,
-        name: "Sara Anela",
-        date: "5 days ago",
-        replay: "Replay",
-        report: "Report",
-        para: `Cras sit amet nibh libero, in gravida nulla. Nulla vel metus
-        scelerisque Praesent sapien massa, convallis a pellentesque nec,
-        egestas non nisi. Cras ultricies ligula sed magna dictum porta.
-        Vestibulum ac diam sit amet quam vehicula elementum sed sit amet
-        dui. Vivamus magna justo.`
-    },
-    {
-        img: user2,
-        name: "Sara Anela",
-        date: "5 days ago",
-        replay: "Replay",
-        report: "Report",
-        para: `Cras sit amet nibh libero, in gravida nulla. Nulla vel metus
-        scelerisque Praesent sapien massa, convallis a pellentesque nec,
-        egestas non nisi. Cras ultricies ligula sed magna dictum porta.
-        Vestibulum ac diam sit amet quam vehicula elementum sed sit amet
-        dui. Vivamus magna justo.`
-    },
-    {
-        img: user3,
-        name: "Sara Anela",
-        date: "5 days ago",
-        replay: "Replay",
-        report: "Report",
-        para: `Cras sit amet nibh libero, in gravida nulla. Nulla vel metus
-        scelerisque Praesent sapien massa, convallis a pellentesque nec,
-        egestas non nisi. Cras ultricies ligula sed magna dictum porta.
-        Vestibulum ac diam sit amet quam vehicula elementum sed sit amet
-        dui. Vivamus magna justo.`
-    },
+   const Specification= Details?.specification_name?.split(',').map((data, index)=>{
+        if(index === 0){
+            return data?.replace('[\"', '')
+        }else if(((Number(Details?.specification_name.split(',').length - 1)) === index)){
+            return data?.replace('\"]', '')
+        }
+        else{
+            return data.replace('"', '')
+        }
+    })
 
-]
-
-const ProductInfo = (props) => {
     return (
         <>
             <div className="row">
@@ -57,25 +38,24 @@ const ProductInfo = (props) => {
                         </ul>
                         <div className="tab-content">
                             <div id="description" className="tab-pane fade in show active">
-                                <div className="product_description" dangerouslySetInnerHTML={{__html:props?.Details?.details}}>
+                                <div className="product_description" dangerouslySetInnerHTML={{__html:Details?.details}}>
                                     
                                 </div>
                             </div>
                             <div id="additional" className="tab-pane fade">
                                 <div className="product_additional">
-                                    <ul>
-                                        <li>Weight: <span>400 g</span></li>
-                                        <li>Dimensions: <span>10 x 10 x 15 cm</span></li>
-                                        <li>Materials: <span> 60% cotton, 40% polyester</span></li>
-                                        <li>Other Info: <span> American heirloom jean shorts pug seitan
-                                            letterpress</span></li>
+                                   {Specification && Specification[0]!=="[null]" && <ul>
+                                    {Specification && Specification.map((data,index)=>
+                                        <li>{data.replace('"', '')}<span>{Speci_Name[index].replace('"','')}</span></li>
+                                        )}
                                     </ul>
+                                    }
                                 </div>
                             </div>
                             <div id="review" className="tab-pane fade">
                                 <div className="product_reviews">
                                     <ul>
-                                        {ReviewData.map((data, index) => (
+                                        {/* {ReviewData.map((data, index) => (
                                             <li className="media" key={index}>
                                                 <div className="media-img">
                                                     <img src={data.img} alt="img" />
@@ -103,7 +83,7 @@ const ProductInfo = (props) => {
                                                     </div>
                                                 </div>
                                             </li>
-                                        ))}
+                                        ))} */}
                                     </ul>
                                 </div>
                             </div>

@@ -24,7 +24,6 @@ const Shop = (props) => {
 useEffect(()=>{
  setProducts(props.ProductsData)
 },[props.ProductsData])
-console.log(products,"products")
 let settings = {
   customPaging: function(i) {
       return (
@@ -72,7 +71,7 @@ let settings = {
 
     return (
         <>
-            <section id="shop_main_area" className="ptb-100">
+            <section id="shop_main_area" className="ptb-100 sort_list">
                 <div className="container">
                     <Filter filterEvent={randProduct}/>
                     {/* <div className="row"> */}

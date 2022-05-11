@@ -56,10 +56,9 @@ const TodayDeal = () => {
             setDealList(response.data)
         })
         },[]) 
-        console.log(DealList.length,"DealList")
     return (
     <>
-    <section id="to_days_area" className="ptb-100 slider_arrows_one">
+    <section id="to_days_area" className="ptb-10 slider_arrows_one">
     {DealList.length>0&& <div className="container">
        <Heading heading="ToDay's Deal" para="Lorem Ipsum is simply dummy text of the printing and typesetting industry"/>
             <div className="row">

@@ -10,6 +10,7 @@ import Image2 from '../../assets/img/product-image/product2.jpg'
 import Image3 from '../../assets/img/product-image/product3.jpg'
 import Banner from '../../component/Common/Banner'
 import Footer from '../../component/Common/Footer'
+import Post from './Post'
 export default function FollowAndFollowings() {
     const [value, setValue] = React.useState(0);
     const ImageSlide=[Image1,Image2,Image3]

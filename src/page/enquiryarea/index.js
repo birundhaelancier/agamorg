@@ -7,7 +7,7 @@ const EnquiryData = () => {
     return (
         <>
             <Header />
-            <Banner title="Contact" />
+            {/* <Banner title="Contact" /> */}
             <EnquiryArea />
             <Footer />
         </>

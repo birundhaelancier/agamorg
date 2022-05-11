@@ -1,13 +1,16 @@
-import React,{useEffect,useState} from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import React,{useEffect,useState,useRef} from 'react'
+import { useHistory, useParams,Link } from 'react-router-dom'
 // import img
 import img1 from '../../assets/img/invoice/invoice.svg'
 import logo from '../../assets/img/agamlogo.png'
 import sign from '../../assets/img/invoice/sign.png'
 import { UserOrders } from '../../Redux/Action/allActions'
+import { ImageUrl } from '../../Redux/Utils/baseurl'
 import { connect,useDispatch } from 'react-redux'
+import ReactToPrint from "react-to-print";
 import moment from 'moment'
 const InvoiceOnes = (props) => {
+  const componentRef = useRef();
   const history = useHistory();
   let { id } =useParams()
   let dispatch=useDispatch()
@@ -24,21 +27,22 @@ const InvoiceOnes = (props) => {
       setOrderDetails(data)
      }
     })
+
   },[props.Orders,id])
   const  Billing =OrderDetails?.billing_info
   const OrderDetail=Object.values(OrderDetails?.cart || "") || OrderDetails.cart
-  console.log(OrderDetail,"hjfg")
   const cartTotal = () => {
     return OrderDetail.reduce(function (total, item) {
         return total + ((item.qty || 1) * item.main_price)
     }, 0)
 }
+
   return (
    
     <>
       <section className="theme-invoice-1 pb-100">
         <div className="container">
-          <div className="row">
+          <div className="row" ref={componentRef}>
             <div className="col-xl-8 m-auto">
               <div className="back_btn_emial">
                 <button className="theme-btn-one btn-black-overlay btn_sm" onClick={routeChange}>
@@ -49,12 +53,9 @@ const InvoiceOnes = (props) => {
                 <div className="invoice-header">
                   <div className="upper-icon">
                     <img src={img1} className="img-fluid" alt="svg" />
-                    {/* <div className='footerlogoTitle'>
-                      <div className='agamTitle'>Agam</div>
-                      <div className='organicTitle'>Org</div>
-                    </div> */}
+                    
                   </div>
-                  <div className="row header-content">
+                  <div className="row header-content" >
                     <div className="col-md-6">
                       <div className="footerLogo">
                         <img src={logo} alt="logo" className='agalogoImageFooter' />
@@ -66,9 +67,12 @@ const InvoiceOnes = (props) => {
                       {/* <img src={logo} className="img-fluid" alt="logo" /> */}
                       <div className="mt-md-4 mt-3">
                         <h4 className="mb-2">
-                        Agamorg Demo Store india - 363512
+                        {/* Agamorg Demo Store india - 363512 */}
+                        31, MARUTHUPANDIYAR 1ST STREET, <br/>ANANDHA NAGAR,
+                                     P&T NAGAR EXTENSION,<br/>
+                                     MADURAI- 625017<br/>
                         </h4>
-                        <h4 className="mb-0">info@agamorg.com</h4>
+                        <a className="mb-0" href="https://agamorg.com/#/">info@agamorg.com</a>
                       </div>
                     </div>
                     <div className="col-md-6 text-md-right mt-md-0 mt-4">
@@ -90,7 +94,8 @@ const InvoiceOnes = (props) => {
                   </div>
                 </div>
                 <div className="invoice-body table-responsive-md">
-                  <table className="table table-borderless mb-0">
+                <div>
+                  <table className="table table-borderless mb-0 mbl" >
                     <thead>
                       <tr>
                         <th scope="col">#</th>
@@ -101,6 +106,7 @@ const InvoiceOnes = (props) => {
                       </tr>
                     </thead>
              {OrderDetail.map((data,index)=>{
+               console.log(data,"lllllllllll")
                      return(
                     <tbody>
                       <tr>
@@ -115,23 +121,84 @@ const InvoiceOnes = (props) => {
                     )})}      
 
                     <tfoot>
+                    <tr>
+                        <td colSpan="3"></td>
+                        <td className="font-bold text-dark" colSpan="1">SUB TOTAL</td>
+                        <td className="font-bold text-theme">₹{cartTotal()}.00</td>
+                      </tr>
+                      {OrderDetails?.discount!=="[]" &&<tr>
+                        <td colSpan="3"></td>
+                        <td className="font-bold text-dark" colSpan="1">Discount</td>
+                        <td className="font-bold text-theme">₹{OrderDetails?.discount}.00</td>
+                      </tr>}
                       <tr>
-                        <td colSpan="2"></td>
-                        <td className="font-bold text-dark" colSpan="2">GRAND TOTAL</td>
-                        <td className="font-bold text-theme">${cartTotal()}.00</td>
+                        <td colSpan="3"></td>
+                        <td className="font-bold text-dark" colSpan="1">Delivery Charge</td>
+                        <td className="font-bold text-theme">₹{OrderDetails?.shipping?.price}.00</td>
+                      </tr>
+                      <tr>
+                        <td colSpan="3"></td>
+                        <td className="font-bold text-dark" colSpan="1">GRAND TOTAL</td>
+                        <td className="font-bold text-theme">₹{cartTotal()}.00</td>
                       </tr>
                     </tfoot>
                   </table>
+                  
+                  </div>
+
+          <div className="offcanvas-add-cart-wrapper mobile_view_cart">
+          <ul className="offcanvas-cart">
+            {OrderDetail&& OrderDetail?.map((data, index) => (
+              <li className="offcanvas-wishlist-item-single" key={index}>
+                <div className="offcanvas-wishlist-item-block">
+                  <Link
+                    to={`/product-details-one/${data.slug}`}
+                    className="offcanvas-wishlist-item-image-link"
+                  >
+                    <img
+                      src={ImageUrl+data.photo}
+                      alt="img"
+                      className="offcanvas-wishlist-image"
+                    />
+                  </Link>
+                  <div className="offcanvas-wishlist-item-content">
+                    <Link
+                      to={`/product-details-one/${data.slug}`}
+                      className="offcanvas-wishlist-item-link"
+                    >
+                      {data.name}
+                    </Link>
+                    <div className="offcanvas-wishlist-item-details">
+                      <span className="offcanvas-wishlist-item-details-quantity">
+                        Quantity:{data.qty || 0}.00
+                      </span>
+                    </div>
+                    <div className="offcanvas-wishlist-item-details">
+                      <span className="offcanvas-wishlist-item-details-quantity">
+                        Price:₹{data.main_price || 0}.00
+                      </span>
+                    </div>
+                   
+                    <div style={{color:"green"}}> Total: ₹{data.main_price*data.qty}</div>
+                      
+                  </div>
+                </div>
+                
+              </li>
+            ))}
+          </ul>
+          </div>
                 </div>
                 <div className="invoice-footer text-right">
-                  <div className="authorise-sign">
-                    <img src={sign} className="img-fluid" alt="sing" />
-                    <span className="line"></span>
-                    <h6>Authorised Sign</h6>
-                  </div>
+               
                   <div className="buttons">
-                    <button className="theme-btn-one btn-black-overlay btn_sm">export as PDF</button>
-                    <button className="theme-btn-one btn-black-overlay btn_sm ml-2">print</button>
+                  <ReactToPrint
+          trigger={() =>  <button className="theme-btn-one btn-black-overlay btn_sm ml-2">print</button>}
+          content={() => componentRef.current}
+        />
+        {/* <ComponentToPrint  /> */}
+                    {/* <button className="theme-btn-one btn-black-overlay btn_sm">export as PDF</button> */}
+                   
                   </div>
                 </div>
               </div>

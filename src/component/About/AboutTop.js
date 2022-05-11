@@ -5,29 +5,34 @@ import img1 from '../../assets/img/common/img-about.jpg'
 const AboutTop = () => {
     return (
         <>
-            <section id="about-top" className="ptb-100">
+            <section id="about-top" className="ptb-100 About_cont">
                 <div className="container">
                     <div className="row">
-                        <div className="col-lg-6 col-md-12 col-sm-12 col-12">
-                            <div className="about_top_img">
-                                <img src={img1} alt="img" />
-                            </div>
-                        </div>
-                        <div className="col-lg-6 col-md-12 col-sm-12 col-12">
+                        <div className="col-lg-12 col-md-12 col-sm-12 col-12">
                             <div className="about_top_left_content">
-                                <h2>ABOUT OUR Agamorg STORE</h2>
-                                <h4>We believe that every project existing in digital world is a result of an idea and every
-                                    idea has a cause.</h4>
-                                <p><strong>"AGAMORG"</strong> is an multi-vendor B2C fast e-commerce company. The company mainly focuses on men,women and children wear, but it also offers
-                                    other apparel, clothes, accessories, shoes, bags and other fashion items. <strong>AGAMORG</strong> mainly targets Europe, America, Australia, and the
-                                    Middle East along with other consumer markets."</p>
-                                <p>The brand was founded in October 2021, and since then it has upheld the
-                                    philosophy that "everyone can enjoy the beauty of fashion." Its business covers more than 220 countries and regions around the world</p>
-                                <p>The brand was founded in October 2021, and since then it has upheld the
-                                    philosophy that "everyone can <strong>AGAMORG</strong> the beauty of fashion." Its business covers more than 220 countries and regions around the world</p>
-                                <p>The brand was founded in October 2021, and since then it has upheld the
-                                    philosophy that "everyone can enjoy the <strong>AGAMORG</strong> of fashion." Its business covers more than 220 countries and regions around the world</p>
-                                <p>The brand was founded in October 2021, and since then it has upheld the </p>
+                                <h4>ABOUT US</h4>
+                                <p>
+                                  In today’s thriving food ecosystem, one of the most loosely used words is ‘organic’ which is exactly why Agam Organics aims to redefine what you know about organic fruits and vegetable. Our first step in this direction is making premium, high-quality produce available to you. By doing so, you will finally have the opportunity to draw your own 
+                                  inferences about why organic food is superior to its chemically generated cousins.
+                                </p>
+                                <p>
+                                <strong>Agam Organics</strong> has been founded by two young entrepreneurs who share a desire to impact the organic food ecosystem as a whole – from the environment to the farmers to you, the end consumers. The role of distribution in this process holds substantial importance and by tackling issues at this level, we have been able to put in place a compelling win-win proposition.
+                                </p>
+                                <p>
+                                <strong>Agam Organics</strong> offerings are based on the team’s recognition of a few key problems that currently impede potential customers’ ability to consume cleaner, healthier produce:
+                                </p>
+                                <p>
+                                  1.Accessibility<br/>
+                                  2.Awareness<br/>
+                                  3.Affordability
+                                </p>
+                                <p>
+                                By addressing these pivotal issues, we have been able to create the kind of ecosystem that provides our customers with a reliable product that is financially sustainable for everyday consumption, and easily available.
+                                </p>
+                                <p>
+                                Simply put, <strong>Agam Organics</strong> is the only way to ensure that you sacrifice neither the quality of your food nor the money in your wallet!
+                                </p>
+                                
                             </div>
                         </div>
                     </div>

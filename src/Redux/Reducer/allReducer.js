@@ -10,7 +10,15 @@ import {
   GET_SHIPPING_LIST,
   GET_COUPONCODE,
   USER_ORDERS,
-  GET_ADDRESS_LIST
+  GET_ADDRESS_LIST,
+  GET_POST_LIST,
+  FARMER_POST_LIST,
+  STOCK_LIST,
+  FAQ_LIST,
+  ORDER_LIST,
+  RELATED_LIST,
+  ADDITIONAL_CHARGES,
+  AMC_PLANS
 } from "../Utils/constant";
 const initialState = {
   Slider_list: [],
@@ -25,7 +33,15 @@ const initialState = {
   Shipping:[],
   coupon_code:[],
   Orders:[],
-  Address_list:[]
+  Address_list:[],
+  Post_list:[],
+  Farmer_Posts:[],
+  Stock_list:[],
+  Faq_List:[],
+  order_list:[],
+  Related_list:[],
+  AdditionalCharges:[],
+  AMC_Plan:[]
 };
 export default function (state = initialState, action) {
   const { type, payload } = action;
@@ -55,8 +71,23 @@ export default function (state = initialState, action) {
     case USER_ORDERS:
          return { ...state, Orders: payload };
     case GET_ADDRESS_LIST:
-          return { ...state, Address_list: payload };         
-                     
+          return { ...state, Address_list: payload }; 
+    case GET_POST_LIST:
+          return { ...state, Post_list: payload };  
+    case FARMER_POST_LIST:
+          return { ...state, Farmer_Posts: payload }; 
+    case STOCK_LIST:
+          return { ...state, Stock_list: payload }; 
+    case FAQ_LIST:
+          return { ...state, Faq_List: payload };
+    case RELATED_LIST:
+         return { ...state, Related_list: payload };  
+    case ORDER_LIST:
+        return { ...state, order_list: payload };  
+    case ADDITIONAL_CHARGES:
+        return { ...state, AdditionalCharges: payload };
+    case AMC_PLANS:
+        return { ...state, AMC_Plan: payload };                                     
     default:
       return state;
   }

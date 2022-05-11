@@ -1,7 +1,7 @@
 import {
     GET_SLIDER_LIST,GET_HOMEPRODUCT_LIST,GET_CATEGORY_LISTITEM,GET_PACKAGE ,GET_CITY_LIST,GET_PROFILE_DATA,
     GET_WISH_LIST,GET_SINGLEPRODUCT_LIST,GET_SHIPPING_LIST,GET_COUPONCODE,USER_ORDERS,SEARCH_CATEGORY,
-    GET_ADDRESS_LIST 
+    GET_ADDRESS_LIST,GET_POST_LIST,FARMER_POST_LIST,STOCK_LIST,FAQ_LIST,ORDER_LIST,RELATED_LIST,ADDITIONAL_CHARGES,AMC_PLANS 
 } from '../Utils/constant';
 import { apiurl, findServer } from '../Utils/baseurl';
 import axios from 'axios';
@@ -120,4 +120,73 @@ export const Get_Address_List=()=>async (dispatch)=>{
          url:apiurl+"addressList/"+JSON.parse(localStorage.getItem("UserId")),
     });
     return dispatch({type:GET_ADDRESS_LIST,payload:response.data})
+}
+
+// former actions
+export const Get_Post_List=()=>async (dispatch)=>{
+    const response=await axios({
+         method:"GET",
+         url:apiurl+"postList"
+    });
+    return dispatch({type:GET_POST_LIST,payload:response.data})
+}
+
+export const Farmer_Post_List=()=>async (dispatch)=>{
+    const response=await axios({
+         method:"GET",
+         url:apiurl+"farmerPostList/"+JSON.parse(localStorage.getItem("UserId")),
+    });
+    return dispatch({type:FARMER_POST_LIST,payload:response.data})
+}
+
+export const Stock_List=()=>async (dispatch)=>{
+    const response=await axios({
+         method:"POST",
+         url:apiurl+"stockList",
+         data:{"fid":JSON.parse(localStorage.getItem("UserId"))|| ""}
+    });
+    return dispatch({type:STOCK_LIST,payload:response.data})
+}
+
+
+export const Faq_List=()=>async (dispatch)=>{
+    const response=await axios({
+         method:"GET",
+         url:apiurl+"faq",
+    });
+    return dispatch({type:FAQ_LIST,payload:response.data})
+}
+
+export const Order_List=()=>async (dispatch)=>{
+    const response=await axios({
+         method:"POST",
+         url:apiurl+"orders",
+         data:{"fid":JSON.parse(localStorage.getItem("UserId"))|| ""}
+    });
+    return dispatch({type:ORDER_LIST,payload:response.data})
+}
+
+export const Related_Products=(id)=>async (dispatch)=>{
+    const response=await axios({
+         method:"POST",
+         url:apiurl+"relatedProduct",
+         data:{"id":id}
+    });
+    return dispatch({type:RELATED_LIST,payload:response.data})
+}
+
+export const Advisor_Charges=()=>async (dispatch)=>{
+    const response=await axios({
+         method:"GET",
+         url:apiurl+"additionalCharges",
+    });
+    return dispatch({type:ADDITIONAL_CHARGES,payload:response.data})
+}
+
+export const Amc_Plans=()=>async (dispatch)=>{
+    const response=await axios({
+         method:"GET",
+         url:apiurl+"amcPlans",
+    });
+    return dispatch({type:AMC_PLANS,payload:response.data})
 }

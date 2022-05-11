@@ -7,6 +7,7 @@ import { Get_Wishlist } from '../../Redux/Action/allActions'
 import { DeleteWishlist } from '../../Redux/Action/CreateActions'
 import { ImageUrl } from '../../Redux/Utils/baseurl'
 import Swal from "sweetalert2";
+import { notification } from "antd";
 const Wishlist = (props) => {
     let dispatch = useDispatch();
     let history=useHistory()
@@ -31,7 +32,7 @@ const Wishlist = (props) => {
         let items=[...CartsDetails]
         items.push(product)
         setCartsDetails(items);
-        Swal.fire('Success', "Successfully added to your Cart", 'success') 
+        notification.success({message:"Successfully added to your Cart"}) 
         PageReload()
         var Id =CartsDetails&&CartsDetails.find((cart)=>{
             return cart?.id===product?.id
@@ -64,10 +65,10 @@ const Wishlist = (props) => {
         <>
           {WishListData?.length
                                                 ?
-            <section id="Wishlist_area" className="ptb-100">
+            <section id="Wishlist_area" className="ptb-100 wish_list_view"  >
                 <div className="container">
                     <div className="row">
-                        <div className="col-12">
+                        <div className="col-12 desktop_view_cart">
                             <div className="table_desc">
                                 <div className="table_page table-responsive">
                                     <table>
@@ -77,8 +78,8 @@ const Wishlist = (props) => {
                                                 <th className="product_thumb">Image</th>
                                                 <th className="product_name">Product</th>
                                                 <th className="product-price">Price</th>
-                                                <th className="product_stock">Stock Status</th>
-                                                <th className="product_addcart">Add To Cart</th>
+                                                {/* <th className="product_stock">Stock Status</th> */}
+                                                {/* <th className="product_addcart">Add To Cart</th> */}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -98,10 +99,10 @@ const Wishlist = (props) => {
                                                         </Link>
                                                         </td>
                                                         <td className="product-price">₹{data.discount_price}.00</td>
-                                                        <td className="product_stock"><h6>{data.stock}</h6></td>
-                                                        <td className="product_addcart">
+                                                        {/* <td className="product_stock"><h6>{data.stock}</h6></td> */}
+                                                        {/* <td className="product_addcart">
                                                             <button type="button" className="theme-btn-one btn-black-overlay btn_sm" onClick={() => addToCart(data)}>Add to cart</button>
-                                                        </td>
+                                                        </td> */}
                                                     </tr> 
                                                 ))}                                  
                                         </tbody>
@@ -109,9 +110,60 @@ const Wishlist = (props) => {
                                 </div>
                             </div>
                         </div>
+                 
+                <> <div className="offcanvas-add-cart-wrapper mobile_view_cart">
+          {/* <h4 className="offcanvas-title">Shopping Cart</h4> */}
+          <ul className="offcanvas-cart">
+            {WishListData&& WishListData?.map((data, index) => (
+              <li className="offcanvas-wishlist-item-single" key={index}>
+                <div className="offcanvas-wishlist-item-block">
+                  <Link
+                    to={`/product-details-one/${data.slug}`}
+                    className="offcanvas-wishlist-item-image-link"
+                  >
+                    <img
+                      src={ImageUrl+data.photo}
+                      alt="img"
+                      className="offcanvas-wishlist-image"
+                    />
+                  </Link>
+                  <div className="offcanvas-wishlist-item-content">
+                    <Link
+                      to={`/product-details-one/${data.slug}`}
+                      className="offcanvas-wishlist-item-link"
+                    >
+                      {data.name}
+                    </Link>
+                  
+                    <div className="offcanvas-wishlist-item-details">
+                      <span className="offcanvas-wishlist-item-details-quantity">
+                        Price:₹{data.discount_price || 0}.00
+                      </span>
                     </div>
+                    {/* <div style={{color:"green"}}> Stock:{data.stock || 0}</div> */}
+                       {/* <td className="product_stock"><h6>{data.stock}</h6></td> */}
+                    {/* <div style={{color:"green"}}> ₹{Number(data.discount_price)*Number(data.quantity)}</div> */}
+                  </div>
                 </div>
+                <div className="offcanvas-wishlist-item-delete text-right">
+                  <a
+                    href="#!"
+                    className="offcanvas-wishlist-item-delete"
+                    onClick={() => rmProduct(data.id)}
+                  >
+                    <i className="fa fa-trash"></i>
+                  </a>
+                </div>
+              </li>
+            ))}
+          </ul>
+          </div>
+          </>
+          </div>
+        </div>
             </section>
+      
+
             :         <section id="empty_cart_area" className="ptb-100">
             <div className="container">
                 <div className="row">

@@ -1,9 +1,11 @@
 import React, { useEffect,useState } from 'react';
-import { BrowserRouter as Router, Switch, Route, BrowserRouter } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, BrowserRouter, HashRouter } from 'react-router-dom';
 import loadable from './component/Common/loader/loadable';
 import Loading from './component/Common/loader';
 import pMinDelay from 'p-min-delay';
 import { AuthContext } from './context/auth' 
+import axios from 'axios'
+import 'antd/dist/antd.css';
 // const ShopTwo = loadable(() => pMinDelay(import ('./page/shop/shop-two'), 250), { fallback: <Loading />});
 
 
@@ -67,6 +69,14 @@ const EnquiryData = loadable(() => pMinDelay(import ('./page/enquiryarea'), 250)
 const FarmerDashboard = loadable(() => pMinDelay(import ('./page/FarmerDashboard'), 250));
 const FollowAndFollowings = loadable(() => pMinDelay(import ('./page/FarmerDashboard/FollowAndFollowings'), 250));
 const Post = loadable(() => pMinDelay(import ('./page/FarmerDashboard/Post'), 250));
+const Excutive = loadable(() => pMinDelay(import ('./component/Excutive'), 250));
+const ExcutiveHead = loadable(() => pMinDelay(import ('./component/ExcutiveHead'), 250));
+const OutsideFarmer = loadable(() => pMinDelay(import ('./component/OutsideFarmer'), 250));
+const TermsAndCondition = loadable(() => pMinDelay(import ('./page/terms'), 250));
+const Refund = loadable(() => pMinDelay(import ('./page/refund'), 250));
+const Orders = loadable(() => pMinDelay(import ('./page/order'), 250));
+
+
 const App = () => {
   const existingTokens = JSON.parse(localStorage.getItem("data"));
   const [authTokens, setAuthTokens] = useState(existingTokens);
@@ -75,14 +85,19 @@ const App = () => {
     localStorage.setItem("UserId",JSON.stringify(data.id))
     setAuthTokens(data);
   }
+
   return (
     <AuthContext.Provider value={{ authTokens, setAuthTokens: setTokens }}>  
-      <BrowserRouter>
-        <Router>
+      <HashRouter>
           <ScrollToTop />
           <Switch>
             <Route path='/' exact component={Fashion} />
             <Route path='/furniture' exact component={Furniture} />
+            <Route path='/enquiryarea' exact component={EnquiryData} />
+            <Route path='/excutive' exact component={Excutive} />
+            <Route path='/excutivehead' exact component={ExcutiveHead} />
+            <Route path='/outsidefarmer' exact component={OutsideFarmer} />
+            
             <Route path='/enquiryarea' exact component={EnquiryData} />
             <Route path='/electronics' exact component={Electronics} />
             <Route path='/shop/:slug' exact component={ShopGrid} />
@@ -90,18 +105,21 @@ const App = () => {
             <Route path='/shoplist' exact component={ShopList} />
             <Route path='/shop-left-bar' exact component={ShopLeftSideBar} />
             <Route path='/shop-right-bar' exact component={ShopRightSideBar} />
-            <Route path='/product-details-one/:id' exact component={ProductDetails} />
+            <Route path='/product-details-one/:id?/:productid?' exact component={ProductDetails} />
             <Route path='/product-details-two/:id' exact component={ProductDetailsTwos} />
-            <Route path='/cart' exact component={Cart} />
+            <Route path='/cart/:visit?' exact component={Cart} />
             <Route path='/cartTwo' exact component={CartTwo} />
             <Route path='/empty-cart' exact component={EmptyCarts} />
-            <Route path='/checkout-one/:discount' exact component={CheckoutOne} />
+            <Route path='/checkout-one/:discount?' exact component={CheckoutOne} />
             <Route path='/checkout-two' exact component={CheckoutTwos} />
             <Route path='/wishlist' exact component={WishLists} />
             <Route path='/compare' exact component={Compares} />
             <Route path='/order-complete' exact component={OrderComplete} />
             <Route path='/order-tracking' exact component={OrderTracking} />
             <Route path='/about' exact component={About} />
+            <Route path='/privacy-policy' exact component={PrivacyPolicy} />
+            <Route path='/terms' component={TermsAndCondition}/>
+            <Route path='/refund' component={Refund}/>
             <Route path='/product-hover' exact component={ProductHover} />
             <Route path='/order-success/:id' exact component={OrderSuccesses} />
             <Route path='/email-template-one' exact component={EmailTemplateOnes} />
@@ -129,7 +147,6 @@ const App = () => {
             <Route path='/account-edit' exact component={AccountEdit} />
             <Route path='/login' exact component={Login} />
             <Route path='/register' exact component={Register} />
-            <Route path='/privacy-policy' exact component={PrivacyPolicy} />
             <Route path='/faqs' exact component={Faqs} />
             <Route path='/coming-soon' exact component={ComingSoon} />
             <Route path='/contact-one' exact component={ContactOne} />
@@ -137,11 +154,11 @@ const App = () => {
             <Route path='/farmer-dashboard' exact component={FarmerDashboard} />
             <Route path='/farmer-followers' exact component={FollowAndFollowings} />
             <Route path='/farmer-posts' exact component={Post} />
+            <Route path='/farmer-order-details' exact component={Orders} />
             
             <Route exact component={Error} />
           </Switch>
-        </Router>
-      </BrowserRouter>
+      </HashRouter>
 
       </AuthContext.Provider>
   );

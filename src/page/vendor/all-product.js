@@ -8,7 +8,7 @@ const AllProducts = () => {
     return (
         <>
              <Header />
-            <Banner title="Vendor" />
+            {/* <Banner title="Vendor" /> */}
             <Layout>
              <AllProduct/>
              </Layout>

@@ -1,19 +1,28 @@
 import React,{useState,useEffect} from 'react'
 import { useDispatch,connect } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { City_List} from '../../Redux/Action/allActions'
 import { Profile_Details,Get_Address_List } from '../../Redux/Action/allActions'
 const AddressDetail = (props) => {
     let dispatch=useDispatch()
     const [profileDetails,setprofileDetails]=useState([])
+    const [CityList,setCityList]=useState()
     useEffect(()=>{
      dispatch(Profile_Details())
      dispatch(Get_Address_List())
     },[])
     useEffect(()=>{
         setprofileDetails(props.ProfileData)
-    },[props.ProfileData,props.Address_list])
-    console.log(props.Address_list)
+        var arrayValues=[]
+         props?.City_List.find((res)=>{
+            if(res.id===props?.Address_list[0]?.city){
+                 setCityList(res.name)
+            }
+
+        })
+    },[props.ProfileData,props.Address_list,props.City_List,CityList])
     const  Details =props?.Address_list
+
     return (
         <div className='Address_detail'>
             <div className="vendors_profiles">
@@ -24,7 +33,7 @@ const AddressDetail = (props) => {
                                 <h4>First Name:</h4>
                             </div>
                             <div className="profile_right">
-                                <h4>{profileDetails.first_name || "-"}</h4>
+                                <h4>{profileDetails?.users?.first_name || "-"}</h4>
                             </div>
                         </div>
                     </li>
@@ -34,7 +43,7 @@ const AddressDetail = (props) => {
                                 <h4>Last Name:</h4>
                             </div>
                             <div className="profile_right">
-                                <h4>{profileDetails.last_name || "-"}</h4>
+                                <h4>{profileDetails?.users?.last_name || "-"}</h4>
                             </div>
                         </div>
                     </li>
@@ -45,7 +54,7 @@ const AddressDetail = (props) => {
                                 <h4>Phone Number:</h4>
                             </div>
                             <div className="profile_right">
-                                <h4>{profileDetails.phone || "-"}</h4>
+                                <h4>{profileDetails?.users?.phone || "-"}</h4>
                             </div>
                         </div>
                     </li>
@@ -56,7 +65,7 @@ const AddressDetail = (props) => {
                                 <h4>Email:</h4>
                             </div>
                             <div className="profile_right">
-                                <h4>{profileDetails.email || "-"}</h4>
+                                <h4>{profileDetails?.users?.email || "-"}</h4>
                             </div>
                         </div>
                     </li>
@@ -67,7 +76,7 @@ const AddressDetail = (props) => {
                                 <h4>City:</h4>
                             </div>
                             <div className="profile_right">
-                                <h4>{Details[0]?.city || "-"}</h4>
+                                <h4>{Details[0]?.city  || "-"}</h4>
                             </div>
                         </div>
                     </li>
@@ -108,6 +117,7 @@ const AddressDetail = (props) => {
 const mapStateToProps = (state) =>
 ({
     ProfileData: state.AllReducer.ProfileData || [],
-    Address_list:state.AllReducer.Address_list || []
+    Address_list:state.AllReducer.Address_list || [],
+    City_List: state.AllReducer.City_List || [],
 });
 export default connect(mapStateToProps)(AddressDetail);

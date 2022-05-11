@@ -21,7 +21,6 @@ const YourOrders = (props) => {
             setFilterData(props.ShippingDetails[1]) 
         }
       },[props.ShippingDetails])  
-      console.log(FilterData)
     return (
         <>
             <div className="order_review  box-shadow bg-white">

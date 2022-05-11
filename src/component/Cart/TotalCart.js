@@ -2,8 +2,10 @@ import React,{useEffect,useState} from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import { useSelector,useDispatch,connect } from "react-redux";
 import { Get_Shipping,CouponCode } from '../../Redux/Action/allActions'
+import NewsletterModal from '../../component/Common/NewModel'
 import Alert from '@mui/material/Alert';
 import Swal from 'sweetalert2'
+import { notification } from 'antd';
 const TotalCart = (props) => {
     let dispatch=useDispatch()
     let history=useHistory()
@@ -12,16 +14,30 @@ const TotalCart = (props) => {
     const [coupon,setcoupon]=useState("")
     const [couponErr,setcouponErr]=useState(false)
     const [proceed,setproceed]=useState(false)
-    const [ShoopingCarts,setShoopingCarts]= useState(JSON.parse(window.localStorage.getItem("carts")))
+    const [login,setlogin]=useState(false)
+    const [flag,setflag]=useState(0)
+    const [TotalCarts,setTotalCarts]=useState(localStorage.getItem('Total'))
+    const [ShoopingCarts,setShoopingCarts]= useState(JSON.parse(localStorage.getItem('carts')))
     const cartTotal = () => {
-        return ShoopingCarts.reduce(function (total, item) {
-            return total + ((item.quantity || 1) * item.discount_price)
+        return ShoopingCarts?.reduce(function (total, item) {
+            return total + ((Number(item.quantity) || 1) * item.discount_price)
         }, 0)
     }
-  
+    const FliterProduct=()=>{
+        ShoopingCarts.filter((data)=>{
+           if(data.flag===0){
+            setflag(0)
+           }else if(data.flag===2){
+               setflag(2)   
+            }else{
+                setflag(1) 
+            }
+        })
+      }
       useEffect(()=>{
         dispatch(Get_Shipping())
         dispatch(CouponCode())
+        FliterProduct()
       },[])
       useEffect(()=>{
         let Total=cartTotal()
@@ -30,58 +46,40 @@ const TotalCart = (props) => {
         }else{
             setFilterData(props.ShippingDetails[1]) 
         }
-      },[props.ShippingDetails,props.coupon_code])
-      useEffect(()=>{
-        setShoopingCarts(JSON.parse(window.localStorage.getItem("carts")))
-      },[window.localStorage.getItem("carts")])
-      const CheckValdeCoupon=()=>{
-        var Data=props.coupon_code.filter((data)=>{
-            return data.code_name===coupon
-            })
-            setCouponDetl(Data[0])
-            if(Data.length===0){
-                setcouponErr(true)
-            }else{
-                setcouponErr(false)  
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Valid Coupon',
-                    // text: 'Welcome '+ name
-                })
-            }
+      },[props.ShippingDetails,props.coupon_code,ShoopingCarts])
+
+      const Proceed=()=>{
+        if(JSON.parse(localStorage.getItem("UserId"))){
+          history.push(`/checkout-one`)
+        }else{
+            setlogin(true)
+        }
       }
+
+       useEffect(() => {
+        setShoopingCarts(JSON.parse(localStorage.getItem('carts')))  
+        setTotalCarts(localStorage.getItem('Total'))
+        },[props.QuantityValues,props.Premium])
     return (
         <>
-            {/* <div className="col-lg-6 col-md-6">
-                <div className="coupon_code left">
-                    <h3>Coupon</h3>
-                    <div className="coupon_inner">
-                        <p>Enter your coupon code if you have one.</p>
-                        <form onSubmit={(e) =>{ e.preventDefault();  CheckValdeCoupon()}}>
-                            <input className="mb-2" placeholder="Coupon code" type="text" value={coupon} required onChange={(e)=>{setcoupon(e.target.value);couponErr&&CheckValdeCoupon()}}/>
-                            <button type="submit" className="theme-btn-one btn-black-overlay btn_sm">Apply coupon</button>
-                            {couponErr&&<Alert severity="error">Invalid Cuppon Code!</Alert>}
-                        </form>
-                    </div>
-                </div>
-            </div> */}
+         
 
 
                 <div className="col-lg-6 col-md-6">
                     <div className="coupon_code right">
                         <h3>Cart Total</h3>
                         <div className="coupon_inner">
-                            <div className="cart_subtotal">
+                        {flag!=2?<div className="cart_subtotal">
                                 <p>Subtotal</p>
-                                <p className="cart_amount"> &#8377; {cartTotal()}.00</p>
-                            </div>
+                                <p className="cart_amount"> <i class="fa fa-inr"></i> {flag==1?Number(localStorage.getItem("Total")):cartTotal()}.00</p>
+                            </div>:""}
                             {FilterData?.length!=0&&
                             <>
-                            <div className="cart_subtotal ">
-                                <p>Shipping</p>
+                            {flag!=2?<div className="cart_subtotal ">
+                                <p>Delivery Charge</p>
                               
-                                <p className="cart_amount" ><span style={{paddingBottom:"10px",color:"green"}}>{FilterData?.title}</span> &#8377; {FilterData?.price}.00</p>
-                            </div>
+                                <p className="cart_amount" > <i class="fa fa-inr"></i> {FilterData?.price}.00</p>
+                            </div>:""}
                          
                             {/* <div style={{textAlign:"end",paddingBottom:"10px",color:"green",}}></div> */}
                             </>
@@ -90,17 +88,18 @@ const TotalCart = (props) => {
                          
                             <div className="cart_subtotal">
                                 <p>Total</p>
-                                <p className="cart_amount"> &#8377; {Number(cartTotal())+Number(FilterData?.price || 0)}.00</p>
+                                <p className="cart_amount"><i class="fa fa-inr"></i> {Number(flag!==2?FilterData?.price:0)+Number(flag===1?Number(localStorage.getItem("Total")):cartTotal())}.00</p>
                             </div>
                             <div className="checkout_btn">
 
                                 <a className="theme-btn-one btn-black-overlay btn_sm">
-                                    <label onClick={()=>{{history.push(`/checkout-one/${CouponDetl?.id}`)}}}>Proceed to Checkout</label>
+                                    <label onClick={Proceed}>Proceed to Checkout</label>
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
+                <NewsletterModal show={login} stop={()=>setlogin(false)} start={()=>setlogin(false)} />
         </>
     )
 }

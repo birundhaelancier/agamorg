@@ -3,6 +3,7 @@ import ProductCard from '../../Common/Product/ProductCard';
 import Heading from '../Heading';
 import axios from 'axios'
 import { useSelector } from "react-redux";
+import { apiurl } from '../../../Redux/Utils/baseurl'
 const HotProduct = () => { 
     const[DealList,setDealList]=useState([])
     const [FilterData,setFilterData]=useState([])
@@ -12,7 +13,7 @@ const HotProduct = () => {
         // dispatch(Get_HomeProduct_List("deal"))
         axios({
             method: 'post',
-            url:"https://elancier.in/agam/api/homeProduct",
+            url:apiurl+"homeProduct",
             data:{"type":"hot"}
         })
         .then((response) => {
@@ -32,25 +33,21 @@ const HotProduct = () => {
             })
             setFilterData(Data)
         }
-    console.log(DealList,"setDealList")
     return (
         <>
-    <section id="hot_Product_area" className="ptb-100">
+    <section id="hot_Product_area" className="ptb-1 sort_list">
         <div className="container">
-            <Heading heading="Hot Products" para="Lorem Ipsum is simply dummy text of the printing and typesetting industry" />
+            <Heading heading="Hot Products" para="Farm-Fresh organic vegetables develivered to your door step" />
             <div className="row">
                 <div className="col-lg-12">
                     <div className="tabs_center_button">
                   
                         <ul className="nav nav-tabs">  
                         {DealList&&DealList?.heading?.map((data,index)=>{
+
                           return( 
                               <>
-                            <li><a data-toggle="tab" href={`#${data.is_type}`} onClick={()=>FilterDataFun(data.is_type)} className={index===0&&"active"}>{data.is_type}</a></li>
-                            {/* <li><a data-toggle="tab" href="#trending">Trending</a></li>
-                            <li><a data-toggle="tab" href="#best_sellers">Best Sellers</a></li> 
-                            <li><a data-toggle="tab" href="#featured">Featured</a></li>
-                            <li><a data-toggle="tab" href="#on_sall">On sall</a></li> */}
+                            <li><a data-toggle="tab" href={`#${data.is_type}`} onClick={()=>FilterDataFun(data.is_type)} className={index===0&&"active"}>{data.is_type==="best"?"best products":data.is_type==="feature"?"featured Products":data.is_type==="flash_deal"?"flash deals":data.is_type==="new"?"new arrival":""}</a></li>
                             </>
                             )})}
 
@@ -73,42 +70,7 @@ const HotProduct = () => {
 
                               </div>
                           </div>
-                          {/* <div id="trending" className="tab-pane fade">
-                          <div className="row"> 
-                                {products.slice(0, 5).map((data, index) =>(
-                                     <div className="col-lg-3 col-md-4 col-sm-6 col-12" key={index}>
-                                     <ProductCard data={data} />
-                             </div>
-                                ))}
-                              </div>
-                          </div> */}
-                          {/* <div id="best_sellers" className="tab-pane fade">
-                          <div className="row">
-                                {products.slice(3, 5).map((data, index) =>(
-                                     <div className="col-lg-3 col-md-4 col-sm-6 col-12" key={index}>
-                                     <ProductCard data={data} />
-                             </div>
-                                ))}
-                              </div>
-                          </div> */}
-                          {/* <div id="featured" className="tab-pane fade">
-                          <div className="row">
-                                {products.slice(5, 11).map((data, index) =>(
-                                     <div className="col-lg-3 col-md-4 col-sm-6 col-12" key={index}>
-                                     <ProductCard data={data} />
-                             </div>
-                                ))}
-                              </div>
-                          </div> */}
-                          {/* <div id="on_sall" className="tab-pane fade">
-                          <div className="row">
-                                {products.slice(6, 13).map((data, index) =>(
-                                     <div className="col-lg-3 col-md-4 col-sm-6 col-12" key={index}>
-                                     <ProductCard data={data} />
-                             </div>
-                                ))}
-                              </div>
-                          </div> */}
+                        
                         </div>
                     </div>  
                 </div>

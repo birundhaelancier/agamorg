@@ -15,7 +15,7 @@ import AddCommentRoundedIcon from '@mui/icons-material/AddCommentRounded';
 import DriveFolderUploadRoundedIcon from '@mui/icons-material/DriveFolderUploadRounded';
 import Typography from '@mui/material/Typography';
 import { useHistory } from "react-router-dom";
-
+import Post from './Post'
 var settings = {
   // arrows: true,
   // dots: true,
@@ -105,7 +105,7 @@ export default function SliderComp() {
          </Slider>  
          
     <Box sx={{ width: '100%',margin:"20px 0px"}}>
-    <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+    {/* <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
     <Tab label={<DriveFolderUploadRoundedIcon/>} {...a11yProps(0)} />
     <Tab label={<AddCommentRoundedIcon/>} {...a11yProps(1)} />
   </Tabs>
@@ -121,7 +121,9 @@ export default function SliderComp() {
       </TabPanel>
       <TabPanel value={value} index={1}>
         Item dsds
-      </TabPanel>
+      </TabPanel> */}
+          <Post />
+
     </Box>
       </div>
     );

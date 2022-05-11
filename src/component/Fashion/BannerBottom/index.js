@@ -9,6 +9,7 @@ import img6 from '../../../assets/img/product-image/product6.jpg';
 import Heading from '../Heading';
 import { Get_HomeProduct_List } from '../../../Redux/Action/allActions' 
 import { connect,useDispatch } from 'react-redux' 
+import { apiurl, ImageUrl } from '../../../Redux/Utils/baseurl'
 import axios from 'axios'
 const BannerBottom = (props) => {
     const [ArrivalList,setArrivalList]=useState([])
@@ -17,7 +18,7 @@ const BannerBottom = (props) => {
         dispatch(Get_HomeProduct_List("deal"))
         axios({
             method: 'post',
-            url:"https://elancier.in/agam/api/homeProduct",
+            url:apiurl+"homeProduct",
             data:{"type":"new"}
         })
         .then((response) => {
@@ -29,21 +30,21 @@ const BannerBottom = (props) => {
         },[props.Slider_list])
     return (
         <>
-        <section id="product_variation_one" className="pt-100">
+        <section id="product_variation_one" className="pt-100 sort_list">
         <div className="container-fluid">
         <Heading heading="New Arrivals" />
             {/* <div className='new_header'>New Arrivals</div> */}
             <div className="row">
                  {ArrivalList&&ArrivalList.map((data)=>{
                         return(
-                <div className="col-lg-4 col-md-6">
+                <div className="col-lg-4 col-md-6 col-sm-6 col-xs-6">
                     <div className="product_variation_one_boxed img-zoom-hover">
-                        <img src={"https://elancier.in/agam/assets/images/"+data.photo} alt="img" />
+                        <img src={ImageUrl+data.photo} alt="img" />
                         <div className="product_var_one_text">
                             <h4 className="color_one">{data.name}</h4>
                             <h2>New</h2>
                             <h4>Collection</h4>
-                            <Link to={`/product-details-one/${data.slug}`} className="theme-btn-one bg-black btn_sm">Shop Now</Link>
+                            <Link to={`/product-details-one/${data.slug}/${data.id}`} className="theme-btn-one bg-black btn_sm">Shop Now</Link>
                         </div>
                     </div>
                     {/* <div className="product_variation_one_boxed img-zoom-hover">

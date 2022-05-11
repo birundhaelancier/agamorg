@@ -5,6 +5,7 @@ import { RatingStar } from "rating-star";
 import { useDispatch,connect } from "react-redux";
 import { AddWishlist } from '../../../Redux/Action/CreateActions'
 import Swal from "sweetalert2";
+import { notification } from 'antd';
 const ProductCard = (props) => {
     let dispatch = useDispatch();
     // Add to cart
@@ -18,11 +19,11 @@ const ProductCard = (props) => {
             return item.id===id
         })
         if(JSON.parse(localStorage.getItem("UserId"))){
-           if(Data[0]?.id===id){Swal.fire('Failed', "Already Added in Wishlist", 'warning')}
+           if(Data[0]?.id===id){notification.warning({message:"Already Added in Wishlist"})}
            else{ dispatch(AddWishlist(id)) }
          }
         else{
-        Swal.fire('Failed', "Please Login then Added in Your Wishlist", 'warning')
+        notification.error({message:"Please Login then Added in Your Wishlist"})
         }
     }
 
@@ -31,7 +32,6 @@ const ProductCard = (props) => {
         dispatch({ type: "products/addToComp", payload: { id } })
     }
     const [modalShow, setModalShow] = useState(false);
-    console.log("cccccccccccc",props.WishList)
     return (
         <>
              <div className="product_box text-center">

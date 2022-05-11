@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { Get_Single_Product_List } from '../../../Redux/Action/allActions'
 import { ImageUrl } from '../../../Redux/Utils/baseurl';
 import { AddWishlist } from '../../../Redux/Action/CreateActions'
+import { notification } from 'antd';
 const ProductDetailsOne = (props) => {
     let dispatch = useDispatch();
     let history=useHistory()
@@ -43,11 +44,12 @@ const ProductDetailsOne = (props) => {
                quantity:count,
                pack:selectpack,
                slug:product.slug,
-               attributeId:filterPack?.id
+               attributeId:filterPack?.id,
+               flag:0
            })
            setCartsDetails(items);
            
-           Swal.fire('Success', "Successfully added to your Cart", 'success') 
+           notification.success({message:"Successfully added to your Cart"}) 
         }
         
         
@@ -65,11 +67,13 @@ const ProductDetailsOne = (props) => {
             return item?.id===id
         })
         if(JSON.parse(localStorage.getItem("UserId"))){
-           if(Data[0]?.id===id){Swal.fire('Failed', "Already Added in Wishlist", 'warning')}
+           if(Data[0]?.id===id){
+               notification.warning({message:"Already Added in Wishlist"}) 
+            }
            else{ dispatch(AddWishlist(id)) }
          }
         else{
-        Swal.fire('Failed', "Please Login then Added in Your Wishlist", 'warning')
+        notification.warning({message:"Please Login then Added in Your Wishlist"}) 
         }
     }
 
@@ -94,7 +98,7 @@ const ProductDetailsOne = (props) => {
         if (count > 1) {
             setCount(count - 1)
         } else {
-            Swal.fire('Sorry!', "Minimun Quantity Reached",'warning')
+            notification.warning({message:"Minimun Quantity Reached"}) 
             setCount(1)
         }
     }
@@ -111,7 +115,7 @@ const ProductDetailsOne = (props) => {
     var Id =StoreDetail&&StoreDetail.find((cart)=>{
         return cart?.id===product?.id
    })
-   if(Id!=null  || Id!=undefined || product?.id===Id?.id){
+   if(Id!=null  || Id!==undefined || product?.id===Id?.id){
        setcartChange(true)
    }else{
     setcartChange(false) 
@@ -128,12 +132,15 @@ const ProductDetailsOne = (props) => {
             <section id="product_single_one" className="ptb-100">
                 <div className="container">
                     <div className="row area_boxed">
+                    <div className="col-lg-2 mbl">
+                      
+                        </div>
                         <div className="col-lg-4">
                             <div className="product_single_one_img">
                                 <img src={ImageUrl+product.photo} alt="img" />
                             </div>
                         </div>
-                        <div className="col-lg-8">
+                        <div className="col-lg-4">
                             <div className="product_details_right_one">
                                 <div className="modal_product_content_one">
                                     <h3>{product.name}</h3>
@@ -141,18 +148,18 @@ const ProductDetailsOne = (props) => {
                                         <RatingStar maxScore={5} rating={product.rating.rate} id="rating-star-common" />
                                         <span>({product.rating.count} Customer Reviews)</span>
                                     </div> */}
-                                    <h4>₹{product.discount_price}.00 <del>₹{parseInt(product.previous_price)}.00</del> </h4>
-                                    <p>{product.sort_details}</p>
+                                    <h4><i class="fa fa-inr"></i> {product.discount_price}.00 <del><i class="fa fa-inr"></i> {parseInt(product.previous_price)}.00</del> </h4>
+                                    {/* <p>{product.sort_details}</p> */}
                                     {product?.attribute?.length>0&&<div className="customs_selects">
                                         <select name="product" className="customs_sel_box" onChange={(e)=>ChangeAttribute(e.target.value)} value={selectpack}>
                                         {product.attribute.map((data)=>{
                                            return(
-                                             <option value={data.name}>{data.name} - ₹{data.price}</option>
+                                             <option value={data.name}>{data.name} - {data.price}</option>
                                            )})}
                                         </select>
                                     </div>}
                                    
-                                    <form id="product_count_form_two">
+                                    {product.stock!==0 && <form id="product_count_form_two">
                                         <div className="product_count_one">
                                             <div className="plus-minus-input">
                                                 <div className="input-group-button">
@@ -168,11 +175,11 @@ const ProductDetailsOne = (props) => {
                                                 </div>
                                             </div>
                                         </div>
-                                    </form>
+                                    </form>}
                                     <div className="links_Product_areas">
                                         <ul>
                                             <li>
-                                                <a href="#!" className="action wishlist" title="Wishlist" onClick={() => addToFav(product.id)}><i
+                                                <a  className="action wishlist" title="Wishlist" onClick={() => addToFav(product.id)}><i
                                                     className="fa fa-heart"></i>Add To Wishlist</a>
                                             </li>
                                             {/* <li>
@@ -180,13 +187,17 @@ const ProductDetailsOne = (props) => {
                                                     className="fa fa-exchange"></i>Add To Compare</a>
                                             </li> */}
                                         </ul>
-                                        <a href="#!" className="theme-btn-one btn-black-overlay btn_sm" onClick={() => addToCart(product)}>{cartChange?"Go To Cart":"Add To Cart"}</a>
+                                       {product.stock!==0? <a className="theme-btn-one btn-black-overlay btn_sm" onClick={() => addToCart(product)}>{cartChange?"Go To Cart":"Add To Cart"}</a>
+                                        :<a  className="theme-btn-one btn-black-overlay btn_sm">Out of Stock</a>}
                                     </div>
 
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div className="col-lg-2 mbl">
+                            
+                        </div>
                     <ProductInfo  Details={product}/>
                 </div>
             </section>

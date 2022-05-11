@@ -1,11 +1,10 @@
-import React,{useEffect,useState} from 'react'
-import { useHistory,useParams } from 'react-router-dom'
+ import React,{useEffect,useState} from 'react'
+import { useHistory,useParams,Link } from 'react-router-dom'
 // import Img
 import img from '../../assets/img/common/delivery_success.png'
 import img1 from '../../assets/img/email/success.png'
-import img2 from '../../assets/img/email/order-success.png'
-import pro1 from '../../assets/img/email/pro-3.jpg'
-import pro2 from '../../assets/img/email/pro-5.jpg'
+
+import invoice from '../../assets/img/invoice/invoice.svg'
 import spoce from '../../assets/img/email/space.jpg'
 // Icon Import
 import facebook from '../../assets/img/email/facebook.png'
@@ -17,6 +16,7 @@ import pinterest from '../../assets/img/email/pinterest.png'
 import { connect,useDispatch } from 'react-redux'
 import { ImageUrl } from '../../Redux/Utils/baseurl'
 import { UserOrders } from '../../Redux/Action/allActions'
+import OrderMobile_View from './MobileView'
 const OrderSuccess = (props) => {
     const history = useHistory();
     const routeChange = () => {
@@ -30,14 +30,13 @@ const OrderSuccess = (props) => {
     },[])
     useEffect(()=>{
       props.Orders.filter((data)=>{
-       if(data.id===Number(id)){
+       if(data.txnid===id){
         setOrderDetails(data)
        }
       })
     },[props.Orders,id])
     const  Billing =OrderDetails?.billing_info
     const OrderDetail=Object.values(OrderDetails?.cart ||"") || OrderDetails.cart
-    console.log(OrderDetails,"hjfg")
     const cartTotal = () => {
       return OrderDetail.reduce(function (total, item) {
           return total + ((item.qty || 1) * item.main_price)
@@ -45,12 +44,23 @@ const OrderSuccess = (props) => {
   }
     return (
         <>
-            <div className="tables_area">
+              <OrderMobile_View/>
+           
+             
+            <div className="tables_area desktop_view_cart">
+            {/* <img src={invoice} className="img-fluid" alt="svg" /> */}
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div className="back_btn_emial">
                     <button className="theme-btn-one btn-black-overlay btn_sm" onClick={routeChange}>
                         <i className="fa fa-arrow-left mr-2"></i>Go Back
                     </button>
                 </div>
+                <div className="buttons" style={{textAlign:"end",padding:"36px 0px 30px 0px"}}>
+                <Link to={`/invoice-one/${OrderDetails?.id}`}><button className="theme-btn-one btn-black-overlay btn_sm">Invoice</button></Link>
+                </div>
+                </div>
+              
+    
                 <table align="center" border="0" cellPadding="0" cellSpacing="0" className="box_table"
                     style={{ padding: "0 30px", BackgroundColor: "#fff", BoxShadow:" 0px 0px 14px -4px rgba(0, 0, 0, 0.2705882353)", width: "100%", display: "block" }}>
                     <tbody>
@@ -76,16 +86,16 @@ const OrderSuccess = (props) => {
                                         <tr>
                                             <td>
                                                 <p>Payment Is Successfully Processsed And Your Order Is On The Way</p>
-                                                <p>Transaction ID:{OrderDetails?.txnid}</p>
+                                                <p><strong>Transaction ID : </strong>{OrderDetails?.txnid}</p>
                                             </td>
                                         </tr>
                                         <tr>
                                         </tr>
                                         <tr>
-                                            {/* <td>
-                                                <img src={img2} alt="img"
-                                                    style={{ marginTop: "30px", marginBottom: "30px" }} />
-                                            </td> */}
+                                            <td className='payment_div'>
+                                               <div><strong>Payment : </strong>{OrderDetails?.payment_method}</div>
+                                               <div><strong>Status : </strong>{OrderDetails?.order_status}</div>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -122,17 +132,17 @@ const OrderSuccess = (props) => {
                                                 <h5 style={{ fontSize: "14px", color: "#444", marginTop: "10px" }}>QTY : <span>{data.qty}</span></h5>
                                             </td>
                                             <td valign="top" style={{ paddingLeft: "15px" }}>
-                                                <h5 style={{ fontSize: "14px", Color: "#444", marginTop: "15px" }}><b>₹{data.main_price}</b></h5>
+                                                <h5 style={{ fontSize: "14px", Color: "#444", marginTop: "15px" }}><b>₹{data.attribute_price?data.attribute_price:data.main_price}</b></h5>
                                             </td>
                                             <td valign="top" style={{ paddingLeft: "15px" }}>
-                                                <h5 style={{ fontSize: "14px", Color: "#444", marginTop: "15px" }}><b>₹{data.main_price*data.qty}</b></h5>
+                                                <h5 style={{ fontSize: "14px", Color: "#444", marginTop: "15px" }}><b>₹{(data.attribute_price?data.attribute_price:data.main_price)*data.qty}</b></h5>
                                             </td>
                                         </tr>
                                           )})}
                                         <tr>
                                             <td colSpan="2"
                                                 style={{ lineHeight: "49px", fontSize: "13px", color: "#000000", paddingLeft: "20px", textAlign: "left", borderRight: " unset" }}>
-                                                Products:</td>
+                                                SubTotal:</td>
                                             <td colSpan="3" className="price"
                                                 style={{ lineHeight: "49px", textAlign: "right", paddingRight: "28px", fontSize: "13px", color: "#000000", TextAlign: "right", borderLeft: "unset" }}>
                                                 <b>₹{cartTotal()}</b></td>
@@ -145,20 +155,13 @@ const OrderSuccess = (props) => {
                                                 style={{ lineHeight: "49px", textAlign: "right", paddingRight: "28px", fontSize: "13px", color: "#000000", TextAlign: "right", borderLeft: "unset" }}>
                                                 <b>₹{ 0}</b></td>
                                         </tr>
-                                        <tr>
-                                            <td colSpan="2"
-                                                style={{ lineHeight: "49px", fontFamily: " Arial", fontSize: "13px", color: "#000000", paddingLeft: "20px", textAlign: "left", borderRight: "unset" }}>
-                                                Gift Wripping: </td>
-                                            <td colSpan="3" className="price"
-                                                style={{ lineHeight: "49px", textAlign: "right", paddingRight: "28px", fontSize: "13px", color: "#000000", TextAlign: "right", borderLeft: "unset" }}>
-                                                <b>₹0</b></td>
-                                        </tr>
-                                        <tr>
-                                            <td colSpan="2" style={{ lineHeight: "49px", fontSize: "13px", color: "#000000", paddingLeft: "20px", textAlign: "left", borderRight: "unset" }}>Shipping :</td>
+                                     
+                                       {OrderDetails?.shipping?.price !==0 && <tr>
+                                            <td colSpan="2" style={{ lineHeight: "49px", fontSize: "13px", color: "#000000", paddingLeft: "20px", textAlign: "left", borderRight: "unset" }}>Delivery Charge :</td>
                                             <td colSpan="3" className="price"
                                                 style={{ lineHeight: "49px", textAlign: "right", paddingRight: "28px", fontSize: "13px", color: "#000000", TtextAlign: "right", borderLeft: " unset" }}>
                                                 <b>₹{OrderDetails?.shipping?.price || 0}</b></td>
-                                        </tr>
+                                        </tr>}
                                         <tr>
                                             <td colSpan="2" style={{ lineHeight: "49px", fontSize: "13px", color: "#000000", paddingLeft: "20px", textAlign: "left", borderRight: "unset" }}>TOTAL PAID :</td>
                                             <td colSpan="3" className="price"
@@ -188,7 +191,7 @@ const OrderSuccess = (props) => {
                                                 <h5
                                                     style={{ fontSize: "16px", fontWeight: "500", color: "#000", lineHeight: "16px", paddingBottom: "13px", borderBottom: "1px solid #e6e8eb", letterSpacing: "-0.65px", marginTop: "0", marginBottom: "13px" }}>
                                                     SHIPPING ADDRESS</h5>
-                                                <p
+                                                    <p
                                                     style={{ textAlign: "left", fontWeight: "normal", fontSize: "14px", color: "#000000", lineHeight: "21px", marginTop: "0" }}>
                                                     {OrderDetails?.shipping_info?.ship_address1},<br /> {OrderDetails?.shipping_info?.ship_city} <br />{OrderDetails?.shipping_info?.ship_country},{OrderDetails?.shipping_info?.ship_zip}
                                                     </p>
@@ -200,7 +203,9 @@ const OrderSuccess = (props) => {
                         </tr>
                     </tbody>
                 </table>
-                <table className="main-bg-light text-center top-0" align="center" border="0" cellPadding="0" cellSpacing="0"
+
+
+                {/* <table className="main-bg-light text-center top-0" align="center" border="0" cellPadding="0" cellSpacing="0"
                     width="100%">
                     <tbody>
                         <tr>
@@ -255,8 +260,10 @@ const OrderSuccess = (props) => {
                             </td>
                         </tr>
                     </tbody>
-                </table>
+                </table> */}
+              
             </div>
+          
         </>
     )
 }

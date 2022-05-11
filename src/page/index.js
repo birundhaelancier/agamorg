@@ -10,7 +10,6 @@ import InstgramSlider from '../component/Common/Instagram'
 import Footer from '../component/Common/Footer'
 import Header from '../component/Common/Header'
 
-
 const Fashion = () => {
     return (
         <>
@@ -22,7 +21,7 @@ const Fashion = () => {
             <TodayDeal />
             <Trending />
             {/* <Blog /> */}
-            <InstgramSlider />
+            <InstgramSlider title="Latest Post"/>
             <Footer />
         </>
     )

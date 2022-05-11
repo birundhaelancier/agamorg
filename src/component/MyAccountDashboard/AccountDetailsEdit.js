@@ -45,13 +45,13 @@ const routeChange = () => {
         setprofileDetails(props.ProfileData)
        },[props.ProfileData])
        useEffect(()=>{
-        UserDetail.f_name=profileDetails.first_name || ""
-        UserDetail.l_name=profileDetails.last_name || ""
-        UserDetail.email=profileDetails.email || ""
+        UserDetail.f_name=profileDetails?.users?.first_name || ""
+        UserDetail.l_name=profileDetails?.users?.last_name || ""
+        UserDetail.email=profileDetails?.users?.email || ""
         setUserDetail((prevState) => ({
             ...prevState,
         }));
-        setupload(profileDetails.photo || "")
+        setupload(profileDetails?.users?.photo || "")
       
         // UserDetail.password=profileDetails.phone
        },[profileDetails])
@@ -70,7 +70,6 @@ const routeChange = () => {
         seterror_msg("Password Does not Match")
        }
      }
-console.log("upload",upload)
     return (
     <>
     <section id="account_edit" className="pt-100 pb-100">
@@ -89,8 +88,8 @@ console.log("upload",upload)
                             <img src={getImage===""&&upload===""?img1:upload!==""&&getImage!==""?getImage:ImageUrl+upload} alt="img" style={{width:"200px",height:"200px"}}/>
                             <div className="fixed_icon"><input type="file" onChange={OnUplodFileChange}/><i className="fa fa-camera"></i></div>
                         </div>
-                        <h4>{profileDetails.first_name}</h4>
-                        <p>{profileDetails.last_name}</p>
+                        <h4>{profileDetails?.users?.first_name}</h4>
+                        <p>{profileDetails?.users?.last_name}</p>
                     </div>
                 </div>
                 <div className="col-lg-9">

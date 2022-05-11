@@ -13,23 +13,24 @@ const FooterData = [
     {
         title: "INFORMATION",
         links: [
-            { linkTitle: "Home", link: "/" },
-            // { linkTitle: "About us", link: "/about" },
-            // { linkTitle: "Privacy Policy", link: "/privacy-policy" },
-            { linkTitle: "Frequently Questions", link: "/faqs" },
-            // { linkTitle: "Order Tracking", link: "/order-tracking" },
-            // { linkTitle: "Compare", link: "/compare" }
+            { linkTitle: "Executive Head", link: "/excutivehead" },
+            { linkTitle: "Executive", link: "/excutive" },
+            { linkTitle: "OutSide Farmer", link: "/outsidefarmer" },
+            { linkTitle: "FAQ", link: "/faqs" },
         ]
     },
     {
-        title: "SHOP",
+        title: "Company",
         links: [
+            { linkTitle: "Terms and Condition", link: "/terms" },
+            { linkTitle: "Privacy Policy", link: "/privacy-policy" },
+            { linkTitle: "About Us", link: "/about" },
+            { linkTitle: "Refund Policy", link: "/refund" },
             // { linkTitle: "Cart View One", link: "/cart" },
             // { linkTitle: "Cart View Two", link: "/cartTwo" },
             // { linkTitle: "Empty Cart", link: "/empty-cart" },
             // { linkTitle: "Checkout View One", link: "/checkout-one" },
             // { linkTitle: "Checkout View Two", link: "/checkout-two" },
-            { linkTitle: "Wishlist", link: "/wishlist" }
         ]
     }
 ]
@@ -97,17 +98,20 @@ const Footer = () => {
                         <div className="col-lg-4 col-md-12 col-sm-12 col-12">
                             <div className="footer_left_side">
                                 <div className="footerLogo">
-                                    <Link to="/" ><img src={logo} alt="logo" className='agalogoImageFooter' /></Link>
-                                    <div className='footerlogoTitle'>
+                                    <Link to="/" ><img src={"https://agamorg.com/admin/assets/images/login_logo.png"} alt="logo" className='agalogoImageFooter' /></Link>
+                                    {/* <div className='footerlogoTitle'>
                                         <div className='agamTitle'>Agam</div>
                                         <div className='organicTitle'>org</div>
-                                    </div>
+                                    </div> */}
                                 </div>
                                 <p>
-                                    <strong>AGAMORG</strong>&nbsp;
-                                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+                                    31, MARUTHUPANDIYAR 1ST STREET, <br/>ANANDHA NAGAR,
+                                     P&T NAGAR EXTENSION,<br/>
+                                     MADURAI- 625017<br/>
+                                     Ph No:9443943402<br/>
+                                     <a href="https://admin@agamorg.com" style={{fontSize:"13px"}}>admin@agamorg.com</a>
                                 </p>
-                                <div className="footer_left_side_icon">
+                                {/* <div className="footer_left_side_icon">
                                     <ul>
                                         <li>
                                             <a href="#!"><i className="fa fa-facebook-f"></i></a>
@@ -125,7 +129,7 @@ const Footer = () => {
                                             <a href="#!"><i className="fa fa-google"></i></a>
                                         </li>
                                     </ul>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                         <div className="col-lg-3 col-md-6 col-sm-12 col-12">
@@ -161,7 +165,7 @@ const Footer = () => {
                                         <div className="mc-form">
                                             <input className="form-control" type="email" placeholder="Your Mail" name="EMAIL" defaultValue="" required />
                                             <div className="clear">
-                                                <button className="theme-btn-one btn_md" type="submit" name="subscribe" defaultValue=""> Send Mail</button>
+                                                <button className="theme-btn-one btn_md" type="submit" name="subscribe" defaultValue=""> Subscribe</button>
                                             </div>
                                         </div>
                                     </form>
@@ -181,7 +185,10 @@ const Footer = () => {
                     <div className="row">
                         <div className="col-lg-6 col-md-6 col-sm-6 col-12">
                             <div className="copyright_left">
-                                <h6>© CopyRight 2021 <span>Agamorg</span></h6>
+                                <h6>© Copyright 2022 <span>
+                                <span className='agamTitle'>Agam</span>
+                                        <span className='organicTitle'>org</span></span>
+                                </h6>
                             </div>
                         </div>
                         <div className="col-lg-6 col-md-6 col-sm-6 col-12">

@@ -6,9 +6,11 @@ import { Link } from 'react-router-dom'
 import { UserOrders } from '../../Redux/Action/allActions'
 import moment from 'moment'
 import { ImageUrl } from '../../Redux/Utils/baseurl'
+import { Profile_Details } from '../../Redux/Action/allActions'
 import { useDispatch,connect } from 'react-redux'
 const DashBoard = (props) => {
     let dispatch=useDispatch()
+    const [profileDetails,setprofileDetails]=useState([])
     const [OrderDetails,setOrderDetails]=useState([])
     const [cartDetail,setcartDetail]=useState([])
     useEffect(()=>{
@@ -25,27 +27,31 @@ const DashBoard = (props) => {
         setcartDetail(Data)
 
     },[props.Orders])
-    console.log(cartDetail,"dddddddddddddd")
-
+    useEffect(()=>{
+        dispatch(Profile_Details())
+       },[])
+       useEffect(()=>{
+           setprofileDetails(props.ProfileData)
+       },[props.ProfileData])
     return (
 
         <>
             <div className="row">
                 <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                     <div className="vendor_top_box pt-4">
-                        <h2>25</h2>
+                        <h2>{profileDetails?.totalOrders || 0}</h2>
                         <h4>Total Orders</h4>
                     </div>
                 </div>
                 <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                     <div className="vendor_top_box">
-                        <h2>2552</h2>
+                        <h2>{profileDetails?.deliveryOrders || 0}</h2>
                         <h4>Total Delivery</h4>
                     </div>
                 </div>
                 <div className="col-lg-4 col-md-4 col-sm-6 col-12">
                     <div className="vendor_top_box">
-                        <h2>50</h2>
+                        <h2>{profileDetails?.pendingOrders || 0}</h2>
                         <h4>Total Pending</h4>
                     </div>
                 </div>
@@ -73,11 +79,11 @@ const DashBoard = (props) => {
                                     </tr>
                                 ))} */}
 
-                           {cartDetail?.map((data)=>
+                           {cartDetail?.slice(0,5).map((data)=>
                                 <tbody>
                                 <tr>
 
-                                    <td><Link to={`/invoice-one/${data.id}`} className="text-primary">#{data.txnid}</Link></td>
+                                    <td><Link to={`/order-success/${data.txnid}`} className="text-primary">#{data.txnid}</Link></td>
                                     <td>{moment(data.created_at).format("DD-MM-YYYY")}</td>
                                     <td><span>₹{data.orderTotal}</span></td>
 
@@ -101,11 +107,11 @@ const DashBoard = (props) => {
                                     <th scope="col">Status</th>
                                 </tr>
                             </thead>
-                            {OrderDetails?.map((data)=>{
+                            {OrderDetails?.slice(0,5).map((data)=>{
                             return(
                             <tbody>
                                 <tr>
-                                    <td><Link to={`/invoice-one/${data.id}`} className="text-primary">#{data.txnid}</Link></td>
+                                    <td><Link to={`/order-success/${data.txnid}`} className="text-primary">#{data.txnid}</Link></td>
                                     <td>{moment(data.created_at).format("DD-MM-YYYY")}</td>
                                     <td><span className={`badge ${data.order_status==="Pending"?"badge-warning":data.order_status==="Completed"?"badge-success":"badge-info"}`}>{data.order_status}</span></td>
                                 </tr>                                
@@ -122,6 +128,7 @@ const DashBoard = (props) => {
 
 const mapStateToProps = (state) =>
 ({
-    Orders: state.AllReducer.Orders || []
+    Orders: state.AllReducer.Orders || [],
+    ProfileData: state.AllReducer.ProfileData || [],
 });
 export default connect(mapStateToProps)(DashBoard);

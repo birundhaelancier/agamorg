@@ -6,6 +6,7 @@ import { Get_Slider_List } from '../../../Redux/Action/allActions'
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { ImageUrl } from '../../../Redux/Utils/baseurl';
 const Banner = (props) => {
     let dispatch=useDispatch()
     const [Sliderlist,setSliderlist]=useState([])
@@ -51,10 +52,10 @@ const Banner = (props) => {
         <section id="furniture_banner">
         <div className="furniture_slider_box">
         <Slider {...settings}>
-               {Sliderlist.length>0&&Sliderlist.map((data,index)=>{
+          {Sliderlist.length>0&&Sliderlist.map((data,index)=>{
                 return(
            <div >        
-          <div className="furniture_slider background_bg bg_1" style={{backgroundImage:`url(${"https://elancier.in/agam/assets/images/"+data?.photo})`}}>
+          <div className="furniture_slider background_bg bg_1" style={{backgroundImage:`url(${ImageUrl+data?.photo})`}}>
             <div className="container">
               <div className="row">
                 <div className="col-lg-6 col-md-8 col-sm-12 col-12">
@@ -62,7 +63,7 @@ const Banner = (props) => {
                     {/* <h5> NEW TRENDING</h5> */}
                     <h2> {data.title}</h2>
                     <p>{data?.details}</p>
-                    <Link to="/shop" className="theme-btn-one bg-black btn_sm">Shop Now</Link>
+                    <a className="theme-btn-one bg-black btn_sm">Shop Now</a>
                   </div>
                 </div>
               </div>

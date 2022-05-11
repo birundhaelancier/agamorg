@@ -9,6 +9,7 @@ import { useAuth } from "../../../context/auth"
 import { User_Login,User_Register } from '../../../Redux/Action/LoginActions';
 import LocationModal from '../Header/LocationModal'
 import Swal from "sweetalert2";
+import { notification } from 'antd';
 const NewsletterModal = (props) => {
     let dispatch=useDispatch()
     const [register,setregister]=useState(false)
@@ -29,21 +30,14 @@ const NewsletterModal = (props) => {
                 props.start()
                 ClearState()
                 if(res.payload.status===1){   
-                Swal.fire({
-                    title: 'Success!',
-                    text: "Registration Successfully",
-                    icon: 'success',
-                    showConfirmButton: false,
-                    timer: 2000
+              
+                  notification.success({
+                    message: "Registration Successfully",
                   })
                 }else if(res.payload.status===0){
-                    Swal.fire({
-                        title: 'Failed!',
-                        text: res.payload.response,
-                        icon: 'warning',
-                        showConfirmButton: false,
-                        timer: 2000
-                    })   
+                    notification.error({
+                        message: res.payload.response,
+                    })  
                 }
             }) 
         }
@@ -55,24 +49,16 @@ const NewsletterModal = (props) => {
             // window.location.reload()
          
             setAuthTokens(res.payload.response) 
-            Swal.fire({
-                title: 'Success!',
-                text: "Successfully Logined",
-                icon: 'success',
-                showConfirmButton: false,
-                timer: 2000
+              notification.success({
+                message: "Successfully Logined",
               })
                setTimeout(()=>{
-                   setlocation(true)
+                   window.location.reload()
                },2000); 
-            }else if(res.payload.status===0){
-                Swal.fire({
-                    title: 'Failed!',
-                    text: res.payload.response,
-                    icon: 'warning',
-                    showConfirmButton: false,
-                    timer: 2000
-                })   
+            }else if(res.payload.status===0){   
+                notification.error({
+                    message: res.payload.response,
+                  })
             }
         }) 
     }  
@@ -86,6 +72,7 @@ const NewsletterModal = (props) => {
             ...prevState,
         }));
     }
+    console.log(register,"register")
     return (
         <>
             <Modal show={props.show}
@@ -102,12 +89,12 @@ const NewsletterModal = (props) => {
                             <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={props.start}>
                                 <span aria-hidden="true">&times;</span>
                             </button>
-                            <div className="footerLogo">
-                                <img src={logo} alt="logo" className='agalogoImageFooter' />
-                                <div className='footerlogoTitle'>
+                            <div className="footerLogo" style={{justifyContent:"center"}}>
+                                <img src={"https://agamorg.com/admin/assets/images/login_logo.png"} alt="logo" className='agalogoImageFooter' style={{width:"60%"}}/>
+                                {/* <div className='footerlogoTitle'>
                                     <div className='agamTitle'>Agam</div>
                                     <div className='organicTitle'>org</div>
-                                </div>
+                                </div> */}
                             </div>
                             <div className='login-input'>
                                 <form onSubmit={(e) =>Submit(e) }>
@@ -139,10 +126,8 @@ const NewsletterModal = (props) => {
                                             <label className="form-check-label" htmlFor="materialUnchecked">Remember me</label>
                                         </div>
                                     </div> */}
-                                    <Link to="">
-                                        <div  className="active c_create_css"  onClick={()=>setregister(true)}><span>{h__register==="register" || register? "Already have an account? Login":"Create Your Account? "}</span></div>
+                                        <div  className="active c_create_css"  onClick={()=>{setregister(!register)}}><span>{h__register==="register" || register? "Already have an account? Login":"Create Your Account? "}</span></div>
                                         {/* <span>{register?"Login":"Register"}</span> */}
-                                    </Link>
                                 </form>
                             </div>
                             {/* <div className='createLink'>

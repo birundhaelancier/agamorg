@@ -11,6 +11,7 @@ const Profile = (props) => {
     useEffect(()=>{
         setprofileDetails(props.ProfileData)
     },[props.ProfileData])
+    console.log("fghj",props.ProfileData)
     return (
         <>
             <div className="vendors_profiles">
@@ -72,7 +73,7 @@ const Profile = (props) => {
                                 <h4>First Name:</h4>
                             </div>
                             <div className="profile_right">
-                                <h4>{profileDetails.first_name || "-"}</h4>
+                                <h4>{profileDetails?.users?.first_name || "-"}</h4>
                             </div>
                         </div>
                     </li>
@@ -82,7 +83,7 @@ const Profile = (props) => {
                                 <h4>Last Name:</h4>
                             </div>
                             <div className="profile_right">
-                                <h4>{profileDetails.last_name || "-"}</h4>
+                                <h4>{profileDetails?.users?.last_name || "-"}</h4>
                             </div>
                         </div>
                     </li>
@@ -92,7 +93,7 @@ const Profile = (props) => {
                                 <h4>Email:</h4>
                             </div>
                             <div className="profile_right">
-                                <h4>{profileDetails.email || "-"}</h4>
+                                <h4>{profileDetails?.users?.email || "-"}</h4>
                             </div>
                         </div>
                     </li>
@@ -102,7 +103,7 @@ const Profile = (props) => {
                                 <h4>Phone Number:</h4>
                             </div>
                             <div className="profile_right">
-                                <h4>{profileDetails.phone || "-"}</h4>
+                                <h4>{profileDetails?.users?.phone || "-"}</h4>
                             </div>
                         </div>
                     </li>

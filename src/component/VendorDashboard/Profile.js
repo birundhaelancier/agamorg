@@ -11,7 +11,6 @@ const Profile = (props) => {
     useEffect(()=>{
         setprofileDetails(props.ProfileData)
     },[props.ProfileData])
-    console.log(props.ProfileData)
     return (
         <>
             <div className="vendors_profiles">

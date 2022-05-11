@@ -3,7 +3,7 @@ import Sidebar from './Sidebar'
 const Layout = (props) => {
     return (
         <>
-            <section id="my-account_area" className="ptb-100">
+            <section id="my-account_area" className="ptb-100 wish_list_view">
                 <div className="container">
                     <div className="row">
                         <Sidebar />

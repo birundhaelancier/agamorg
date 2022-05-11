@@ -4,18 +4,7 @@ const Filter = (props) => {
     return (
         <>
             <div className="row">
-                <div className="col-lg-6 col-md-12">
-                    <div className="product_filter">
-                        <div className="customs_selects">
-                            <select name="product" className="customs_sel_box" onChange={() => { props.filterEvent(1) }}>
-                                <option value="volvo">Most Popular</option>
-                                <option value="saab">Best Seller</option>
-                                <option value="mercedes">Trending</option>
-                                <option value="audi">Featured</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+                
                 <div className="col-lg-6 col-md-12">
                     <div className="product_shot">
                         <div className="product_shot_title">

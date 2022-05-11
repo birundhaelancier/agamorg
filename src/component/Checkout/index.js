@@ -9,6 +9,9 @@ import Alert from '@mui/material/Alert';
 import NewsletterModal from '../../component/Common/NewModel'
 import AddressDetail from './Address'
 import { useHistory, useParams } from 'react-router-dom'
+import { apiurl } from '../../Redux/Utils/baseurl';
+import axios from 'axios'
+import { notification } from 'antd';
 const Checkout = (props) => {
     let { discount } =useParams()
     let dispatch=useDispatch()
@@ -23,21 +26,43 @@ const Checkout = (props) => {
     const [BillingErr,setBillingErr]=useState(false)
     const [emailerr,setemailerr]=useState("")
     const [pincodeerr,setpincodeerr]=useState("")
-    const [Billing_Info,setBilling_Info]=useState({firstname:"",lastname:"",email:"",mobileno:"",fulladdress:"",pincode:"",city:""})
+    const [paymentdetail,setpaymentdetail]=useState()
+    const [AmcPlan,setAmcPlan]=useState(JSON.parse(localStorage.getItem("Plan")))
+    const [Billing_Info,setBilling_Info]=useState({firstname:"",lastname:"",email:"",mobileno:"",address:"",pincode:"",city:""})
     const [FilterData,setFilterData]=useState([])
     const [coupon,setcoupon]=useState("")
+    const [flag,setflag]=useState(0)
     const [couponErr,setcouponErr]=useState(false)
     const cartTotal = () => {
         return ShoopingCarts?.reduce(function (total, item) {
           return total + item.discount_price*item.quantity;
         }, 0);
       };
+      const FliterProduct=()=>{
+        ShoopingCarts?.filter((data)=>{
+           if(data.flag===0){
+            setflag(0)
+          }else if(data.flag===2){
+            setflag(2)   
+           }else{
+             setflag(1) 
+         }
+        })
+      }
       useEffect(()=>{
         dispatch(Get_Shipping())
         dispatch(CouponCode())
         dispatch(Get_Address_List())
         dispatch(City_List())
         dispatch(Profile_Details())
+        axios({
+            method: 'get',
+            url:apiurl+"razorpayDetails",
+        })
+        .then((response) => {
+           setpaymentdetail(response.data)
+        })
+        FliterProduct()
       },[])
       useEffect(()=>{
         let Total=cartTotal()
@@ -50,15 +75,15 @@ const Checkout = (props) => {
             return data.code_name===coupon
          })
         
-      console.log(Data)
       },[props.ShippingDetails,props.coupon_code,discount])  
+
       const profileDetails=JSON.parse(localStorage.getItem("data"))
       const [value,setvalue]=useState("online")
       const options = {
-          key: 'rzp_test_cDBuRdcX87VjyC',
-          amount:cartTotal()*100, //  = INR 1
+          key: paymentdetail?.key,
+          amount:(Number(flag!=1?cartTotal():localStorage.getItem("Total"))+Number(FilterData?.price))*100, //  = INR 1
           name: 'Agam',
-          description: 'some description',
+          description: 'Pay Money',
           image:logo,
           handler: function(response) {
             let product=[]
@@ -73,23 +98,18 @@ const Checkout = (props) => {
                 })
             })
               if(response){
-            dispatch(OrderPlaced_Create(Billing_Info,product,FilterData.status,value,amount,DiscountFilter,response)).then(()=>{
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Payment Sucessfull',
-                    text: 'Thank You',
-                    showConfirmButton: false,
-                    timer: 4000
+            dispatch(OrderPlaced_Create(Billing_Info,product,FilterData.id,value,amount,DiscountFilter,response,AmcPlan,flag)).then(()=>{
+                notification.success({
+                    message: 'Payment Successfull',
                 })
                 history.push("/my-account/customer-order")
-                localStorage.removeItem("carts");
              })
                }
           },
           prefill: {
-              name:profileDetails[0]?.first_name || "Surya",
-              contact:profileDetails[0]?.phone,
-              email:profileDetails[0]?.email
+              name:props?.ProfileData?.users?.first_name,
+              contact:props?.ProfileData?.users?.phone,
+              email:props?.ProfileData?.users?.email
           },
           notes: {
               address:"address"
@@ -114,17 +134,13 @@ const Checkout = (props) => {
               })
           })
           rzp1.on('payment.failed', function (response){
-              console.log("gfh",response)
             if(response){
-                dispatch(OrderPlaced_Create(Billing_Info,product,FilterData.status,value,amount,DiscountFilter,response)).then(()=>{
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Payment Failed',
-                        // text: 'Thank You',
-                        showConfirmButton: false,
-                        timer: 4000
+                // dispatch(OrderPlaced_Create(Billing_Info,product,FilterData.id,value,amount,DiscountFilter,response,AmcPlan,flag)).then(()=>{
+                    notification.warning({
+                        message: 'Payment failed please tryagain',
                     })
-                 })
+                    // RemoveItems()
+                //  })
                    }
     });
           rzp1.open();
@@ -142,7 +158,7 @@ const Checkout = (props) => {
        useEffect(()=>{
         var targetkeys = Object.keys(Billing_Info);
         for (var i in targetkeys) {
-            if (Billing_Info[targetkeys[i]]&& Billing_Info[targetkeys[i]] != "") {
+            if (Billing_Info[targetkeys[i]]&& Billing_Info[targetkeys[i]] !== "") {
                 setBillingErr(false)
             }
             else {
@@ -165,12 +181,9 @@ const Checkout = (props) => {
         if(mobileerr=="" && !BillingErr && pincodeerr=="" && emailerr==""){
           if(value!=="online"){
         dispatch(OrderPlaced_Create(Billing_Info,product,FilterData.status,value,amount,DiscountFilter)).then(()=>{
-            Swal.fire({
-                icon: 'success',
-                title: 'Payment Sucessfull',
-                text: 'Thank You',
-                showConfirmButton: false,
-                timer: 4000
+            notification.success({
+                message: 'Payment Sucessfull',
+         
             })
             localStorage.removeItem("carts");
             history.push("/my-account/customer-order")
@@ -180,12 +193,8 @@ const Checkout = (props) => {
               openPayModal()
           }
         }else{
-            Swal.fire({
-                icon: 'warning',
-                // title: 'Failed',
-                text:"Please Filled All Mandatory Fields",
-                showConfirmButton: false,
-                timer: 2000
+            notification.warning({
+                message:"Please Filled All Mandatory Fields",
             })
             // setmobileerr("Please Enter Your Email") 
         }
@@ -193,24 +202,14 @@ const Checkout = (props) => {
             ...prevState,
         }));
        }
+       const RemoveItems=()=>{
+        localStorage.removeItem("carts")
+        localStorage.removeItem("plan")
+        localStorage.removeItem("packname")
+        localStorage.removeItem("Plan")
+        localStorage.removeItem("Total")
+       }
        const OnChangeInfo=(data,key)=>{
-        if(data&&key==="city"){
-            var Data=props.City_List.filter((item)=>{
-                return(item.id===Number(data))
-                }
-            )
-            var s = Data.map((data)=>{
-                return data.pincode.split(/[\s,]+/)
-            });
-            var match = s[0]
-            let citydata=[]
-            console.log(data)
-            for ( var a in match)
-            {
-                citydata.push({id:a,name:match[a]})
-            }
-            setpincodeList(citydata)
-        }
         if(data&&key==="email"){
             var re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
             if (re.test(data)) {
@@ -277,29 +276,27 @@ const Checkout = (props) => {
       useEffect(()=>{
         const Details=props.Address_list
 
-        var CityData=pincodeList.filter((data)=>{
-            return Number(data.name)===Number(Details[0]?.pincode)
-        })
+        // var CityData=pincodeList.filter((data)=>{
+        //     return Number(data.name)===Number(Details[0]?.pincode)
+        // })
 
-        Billing_Info.firstname=props.ProfileData.first_name || ""
-        Billing_Info.lastname=props.ProfileData.last_name || ""
-        Billing_Info.mobileno=props.ProfileData.phone || ""
-        Billing_Info.pincode=CityData[0]?.name || ""
-        // Billing_Info.city=Details[0]?.city || ""
+        Billing_Info.firstname=props?.ProfileData?.users?.first_name || ""
+        Billing_Info.lastname=props?.ProfileData?.users?.last_name || ""
+        Billing_Info.mobileno=props?.ProfileData?.users?.phone || ""
+        Billing_Info.pincode=Details[0]?.pincode|| ""
+        Billing_Info.city=Details[0]?.city || ""
         Billing_Info.address=Details[0]?.address || ""
-        Billing_Info.email=props.ProfileData.email || ""
+        Billing_Info.email=props?.ProfileData?.users?.email || ""
         setBilling_Info((prevState) => ({
             ...prevState,
         }));
      
 
       },[props.Address_list,props.ProfileData,pincodeList])
-
-  console.log(Billing_Info)   
-
+console.log("check",Billing_Info)
     return (
         <div className='Adress_detail'>
-            <section id="checkout_one" className="ptb-100">
+            <section id="checkout_one" className="ptb-100 wish_list_view">
                 <div className="container">
                     <div className="row">
                     <div className="col-lg-6 col-md-12 col-sm-12 col-12">
@@ -327,7 +324,7 @@ const Checkout = (props) => {
                                 </div>
                                 <div className="col-lg-12 col-md-12 col-sm-=12 col-12">
                                     <div className="form-group">
-                                        <label htmlFor="cname">Mobile No.<span className="text-danger">*</span></label>
+                                        <label htmlFor="cname">Mobile No<span className="text-danger">*</span></label>
                                         <input className="form-control" required type="text" id="number"   minLength={10} pattern={"[1-9]{1}[0-9]{9}"} maxlength={10}
                                             placeholder="Mobile No." onChange={(data)=>OnChangeInfo(data.target.value,"mobileno")} value={Billing_Info.mobileno}/>
                                         <div style={{color:"red",fontSize:"13px",paddingTop:"5px"}}>{mobileerr}</div> 
@@ -335,9 +332,9 @@ const Checkout = (props) => {
                                 </div>
                                 <div className="col-lg-12 col-md-12 col-sm-=12 col-12">
                                     <div className="form-group">
-                                        <label htmlFor="email">Email Addresse<span className="text-danger">*</span></label>
+                                        <label htmlFor="email">Email Address<span className="text-danger">*</span></label>
                                         <input className="form-control" required type="email" id="email"
-                                            placeholder="elancier@gmail.com"  onChange={(data)=>OnChangeInfo(data.target.value,"email")} value={Billing_Info.email}/>
+                                            onChange={(data)=>OnChangeInfo(data.target.value,"email")} value={Billing_Info.email}/>
                                         <div style={{color:"red",fontSize:"13px",paddingTop:"5px"}}>{emailerr}</div>    
                                     </div>
                                 </div>
@@ -354,6 +351,8 @@ const Checkout = (props) => {
                                                         return( <option value={data.id}>{data.name}</option>
                                                         )})}
                                                     </select>
+                                                     {/* <input type="text" required className="form-control" id="city"
+                                            placeholder="City" onChange={(data)=>OnChangeInfo(data.target.value,"city")} value={Billing_Info.city}/> */}
                                                 </div>
                                             </div>
                                         </div>
@@ -362,20 +361,22 @@ const Checkout = (props) => {
                                             <div className="select-input">
                                         <label htmlFor="zip">Pincode<span className="text-danger">*</span></label>
 
-                                                    <select name="pincode" id="pincode" placeholder='pincode' required onChange={(data) => OnChangeInfo(data.target.value, "pincode")} value={Billing_Info.pincode}>
+                                                    {/* <select name="pincode" id="pincode" placeholder='pincode' required onChange={(data) => OnChangeInfo(data.target.value, "pincode")} value={Billing_Info.pincode}>
                                                     <option value="">Select Pincode</option>
                                                         {pincodeList&&pincodeList.map((data)=>{
                                                         return( <option value={data.name}>{data.name}</option>
                                                         )})}
-                                                    </select>
+                                                    </select> */}
+                                                         <input type="text" required className="form-control" id="pincode"
+                                            placeholder="Pincode" onChange={(data)=>OnChangeInfo(data.target.value,"pincode")} value={Billing_Info.pincode}/>
                                                 </div>
                                             </div>
                                         </div>
                                
                                 <div className="col-lg-12 col-md-12 col-sm-12 col-12">
                                     <div className="form-group">
-                                        <label htmlFor="faddress">Full Address<span className="text-danger">*</span></label>
-                                        <input type="text" className="form-control" id="faddress" required
+                                        <label htmlFor="faddress">Address<span className="text-danger">*</span></label>
+                                        <textarea type="text" className="form-control" id="faddress" required
                                             placeholder="Enter your address here.." onChange={(data)=>OnChangeInfo(data.target.value,"address")} value={Billing_Info.address}/>
                             
                                     </div>
@@ -387,7 +388,7 @@ const Checkout = (props) => {
                         </form>
                         :
                         <>
-                        <div  style={{textAlign:"end",marginBottom:"10px"}}><button  className="theme-btn-one btn-black-overlay btn_sm" onClick={()=>setchangeAddress(true)}>Change Address</button></div>
+                        <div  style={{textAlign:"end",marginBottom:"10px"}} className="change_add"><button  className="theme-btn-one btn-black-overlay btn_sm" onClick={()=>setchangeAddress(true)}>Change Address</button></div>
                         <AddressDetail/>
                         </>
                        }
@@ -435,30 +436,60 @@ const Checkout = (props) => {
                    
                         <tbody>
                         {ShoopingCarts?.map((data)=>{
+                            console.log("check",data)
                             return(
                             <tr>
-                                <td>{data.name} <span className="product-qty">x {data.quantity || 1}</span>
+                                <td>{data.name} <span className="product-qty">x {data.quantity || 1} x {data.pack || data.discount_price}</span>
                                 {/* <td>₹{data.pack}</td> */}
 
                                 </td>
-                                <td>₹{data.discount_price}.00</td>
+                                <td><i class="fa fa-inr"></i> {data.discount_price*data.quantity}.00</td>
                             </tr>
                         )})}
                         </tbody>
                       
                         <tfoot>
+                        {flag==1 && <tr>
+                                <th>AMC Plans</th>
+                                <td className="product-subtotal"><i class="fa fa-inr"></i> {AmcPlan?.amc}.00</td>
+                            </tr>}
+                            {flag==1 &&
+                            <>
+                             <tr>
+                                <th>Installation Charges</th>
+                                <td className="product-subtotal"><i class="fa fa-inr"></i> {AmcPlan?.installation}.00</td>
+                            </tr>
+                            <tr>
+                                <th>Award Program</th>
+                                <td className="product-subtotal"><i class="fa fa-inr"></i> {AmcPlan?.award}.00</td>
+                            </tr>
+                            </>
+                            }
+                            {/* {AmcPlan?.visit==1&&<tr>
+                                <th>Delivery Charges</th>
+                                <td className="product-subtotal"><i class="fa fa-inr"></i> {AmcPlan?.delivery_charge}.00</td>
+                            </tr>} */}
+                            {flag==1 &&
+                            <>
+                            <tr>
+                                <th>Yearly Premium</th>
+                                <td className="product-subtotal"><i class="fa fa-inr"></i> {AmcPlan?.premium_amt}.00</td>
+                            </tr>
                             <tr>
                                 <th>SubTotal</th>
-                                <td className="product-subtotal">₹{cartTotal()}.00</td>
+                                <td className="product-subtotal"><i class="fa fa-inr"></i> {localStorage.getItem("Total")}.00</td>
                             </tr>
-                            <tr>
+                            </>
+                              }
+                            {flag!==1&& <tr>
                                 <th>Delivery Charges</th>
-                                <td>{FilterData?.title==="Delivery"?"₹"+FilterData?.price+".00":FilterData?.title}</td>
-                            </tr>
+                                <td>{FilterData?.title==="Delivery"?<span><i class="fa fa-inr"></i> {FilterData?.price+".00"}</span>:FilterData?.title}</td>
+                            </tr>}
                             <tr>
                                 <th>Total</th>
-                                <td className="product-subtotal">₹{discountAmt?discountAmt:Number(cartTotal())+Number(FilterData?.price || 0)}.00</td>
+                                <td className="product-subtotal"><i class="fa fa-inr"></i> {discountAmt?discountAmt:Number(flag!=1?cartTotal():localStorage.getItem("Total"))+Number(FilterData?.price || 0)}.00</td>
                             </tr>
+                           
                         </tfoot>
                     </table>
                 </div>

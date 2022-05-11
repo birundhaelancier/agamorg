@@ -37,7 +37,8 @@ export const FarmerRegister_Enquiry=(data)=>async (dispatch)=>{
          method:"POST",
          url:apiurl+"farmerRegister",
          data:{
-            "name":data.name,
+            "first_name":data.first_name,
+            "last_name":data.last_name,
             "phone":data.phone,
             "email":data.email,
             "pincode":data.pincode,

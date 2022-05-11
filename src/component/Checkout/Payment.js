@@ -1,3 +1,4 @@
+import { notification } from 'antd';
 import React, { useState,useEffect } from 'react'
 import Swal from "sweetalert2";
 import logo from "../../assets/img/agamlogo.png";
@@ -12,12 +13,8 @@ const Payment = () => {
         image:logo,
         handler: function(response) {
             if(response){
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Payment Sucessfull',
-                    text: 'Thank You',
-                    showConfirmButton: false,
-                    timer: 4000
+                notification.success({
+                    message: 'Payment Sucessfull'
                 })
              }
         },
@@ -52,6 +49,7 @@ const Payment = () => {
      }
      const Submit=()=>{
         if(value==="online"){
+            alert("fghj")
             openPayModal()
         }
      }

@@ -1,11 +1,13 @@
 import React from 'react'
 
 const Heading = (props) => {
+    console.log(props)
+    const heading=props.heading==="Latest Post" || props.heading==="Related Produts"
     return (
         <>
             <div className="row">
                 <div className="col-lg-12">
-                    <div className="center_heading">
+                    <div className="center_heading" style={{paddingBottom:heading && "0px"}}>
                         <h2>{props.heading}</h2>
                         <p>{props.para}</p>
                     </div>
